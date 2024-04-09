@@ -22,6 +22,7 @@ void printcommand(char **argv)
 	while (i < 4)
 	{
 		printf("%s\n", argv[i]);
+		//hello
 		i++;
 	}
 }
