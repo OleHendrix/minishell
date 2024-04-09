@@ -12,13 +12,14 @@
 # include <readline/history.h>
 
 # include "./Libft/libft.h"
+# include "./Libft/ft_printf/libftprintf.h"
 # include "./pipex.h"
 
 typedef struct t_command
 {
 	char	*infile;
-	char	**commands;
 	char 	*outfile;
+	char	**commands;
 	char	here_doc;
 	char	*delimiter;
 } t_command;

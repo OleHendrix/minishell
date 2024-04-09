@@ -6,7 +6,7 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/12 16:42:08 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/02 13:14:45 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/04/09 16:09:21 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <sys/wait.h>
 
 # include "Libft/libft.h"
+# include "./Libft/ft_printf/libftprintf.h"
 
 
 void	ft_childproces(int *fd, char **argv, char **envp);
