@@ -23,6 +23,7 @@ void printcommand(char **argv)
 	{
 		printf("%s\n", argv[i]);
 		//hello
+		//ole
 		i++;
 	}
 }
