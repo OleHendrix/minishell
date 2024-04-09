@@ -30,6 +30,7 @@ void	check_input(char *line)
 {
 	int	quotes;
 	int quotesdouble;
+	//de dikke balzak
 	int	i;
 
 	quotes = 0;
