@@ -22,6 +22,7 @@ typedef struct t_command
 	char	**commands;
 	char	here_doc;
 	char	*delimiter;
+	bool	pipe;
 } t_command;
 
 int	pipex(char **argv, char **envp);
