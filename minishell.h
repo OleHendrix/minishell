@@ -25,6 +25,15 @@ typedef struct t_command
 	bool	pipe;
 } t_command;
 
-int	pipex(char **argv, char **envp);
+int		pipex(char **argv, char **envp);
+void	printstruct(t_command *command);
+void	init_command(t_command *command);
+int		ft_checkflags(t_command *command, int i, char **tokens, int j);
+void	addcommand(t_command *command, char **tokens, int j);
+void	init_files(t_command *command, char **tokens);
+void	init_commands(t_command *command, char **tokens);
+void	fill_struct(char *line, char **envp);
+void	ft_parsing(char *line, char **envp);
+
 
 #endif

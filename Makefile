@@ -3,6 +3,7 @@ NAME = minishell
 SOURCES = \
 main.c \
 pipex.c \
+parsing.c \
 
 OBJS = $(SOURCES:.c=.o)
 
