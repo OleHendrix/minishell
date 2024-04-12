@@ -13,19 +13,21 @@
 
 # include "./Libft/libft.h"
 # include "./Libft/ft_printf/libftprintf.h"
-# include "./pipex.h"
 
 typedef struct t_command
 {
 	char	*infile;
+	int		infile_fd;
 	char 	*outfile;
+	int		outfile_fd;
 	char	**commands;
-	char	here_doc;
+	bool	here_doc;
 	char	*delimiter;
 	bool	pipe;
+	int		fd[2];
 } t_command;
 
-int		pipex(char **argv, char **envp);
+int		pipex(t_command *command, char **envp);
 void	printstruct(t_command *command);
 void	init_command(t_command *command);
 int		ft_checkflags(t_command *command, int i, char **tokens, int j);
@@ -34,6 +36,11 @@ void	init_files(t_command *command, char **tokens);
 void	init_commands(t_command *command, char **tokens);
 void	fill_struct(char *line, char **envp);
 void	ft_parsing(char *line, char **envp);
+void	ft_childproces(t_command *command, char **envp);
+void	ft_parentproces(t_command *command, char **envp);
+void	ft_execute(char *argv, char **envp);
+char	*ft_findpath(char *cmd, char **envp);
+void	ft_free(char **cmd);
 
 
 #endif

@@ -11,6 +11,10 @@ void printstruct(t_command *command)
 		printf("infile: %s\n", command->infile);
 	if (command->outfile)
 		printf("outfile: %s\n", command->outfile);
+	if (command->here_doc)
+		printf("here doc: true\n");
+	if (command->delimiter)
+		printf("delimiter: %s\n", command->delimiter);
 	if (command->commands)
 		printf("commands:\n");
 	while (command->commands != NULL && command->commands[i] != NULL)
@@ -25,7 +29,7 @@ void init_command(t_command *command)
 	command->infile = NULL;
 	command->commands = NULL;
 	command->outfile = NULL;
-	command->here_doc = '\0';
+	command->here_doc = false;
 	command->delimiter = NULL;
 	command->pipe = false;
 }
@@ -100,6 +104,12 @@ void	init_commands(t_command *command, char **tokens)
 			command->pipe = true;
 			i++;
 		}
+		else if (!ft_strncmp(tokens[i], "<<", 3))
+		{
+			command->here_doc = true;
+			command->delimiter = ft_strdup(tokens[i + 1]);
+			i += 2;
+		}
 		else
 		{
 			addcommand(command, tokens, i);
@@ -107,7 +117,6 @@ void	init_commands(t_command *command, char **tokens)
 		}
 	}
 }
-
 
 void fill_struct(char *line, char **envp)
 {
@@ -120,22 +129,11 @@ void fill_struct(char *line, char **envp)
 	tokens = ft_split(line, ' ');
 	init_files(&command, tokens);
 	init_commands(&command, tokens);
-	printstruct(&command);
+	pipex(&command, envp);
+	// printstruct(&command);
 }
 
 void	ft_parsing(char *line, char **envp)
 {
-	pid_t pid;
-
-	pid = fork();
-	if (pid == -1)
-		return (perror("Fork failed"));
-	if (pid == 0)
-	{
-		// check_input(line);
-		fill_struct(line, envp);
-	}
-	else
-		waitpid(pid, NULL, 0);
-	
+	fill_struct(line, envp);
 }

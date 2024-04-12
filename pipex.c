@@ -6,11 +6,11 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/02 14:04:27 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/04/12 16:46:51 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "minishell.h"
 
 char	*ft_findpath(char *cmd, char **envp)
 {
@@ -54,74 +54,94 @@ void	ft_execute(char *argv, char **envp)
 	{
 		ft_free(cmd);
 		perror("Command not found");
-		exit(127);
+		// exit(127);
 	}
 	if (execve(path, cmd, envp) == -1)
 	{
 		ft_free(cmd);
 		free(path);
 		perror("Execution failed");
-		exit(1);
+		// exit(1);
 	}
 	ft_free(cmd);
 	free(path);
 }
 
-void	ft_childproces(int *fd, char **argv, char **envp)
-{
-	int	infile;
-
-	infile = open(argv[0], O_RDONLY, 0777);
-	if (infile == -1)
+void	ft_childproces(t_command *command, char **envp)
+{	
+	if (command->infile)
 	{
-		perror("Opening Infile failed");
-		exit(1);
+		command->infile_fd = open(command->infile, O_RDONLY, 0777);
+		if (command->infile_fd == -1)
+		{
+			perror("Opening Infile fssssailed");
+			// exit(1);
+		}
+		dup2(command->infile_fd, STDIN_FILENO);
 	}
-	dup2(fd[1], STDOUT_FILENO);
-	dup2(infile, STDIN_FILENO);
-	close(fd[0]);
-	ft_execute(argv[1], envp);
-	close(infile);
+	if (command->pipe)
+	{
+		dup2(command->fd[1], STDOUT_FILENO);
+		close(command->fd[0]);
+	}
+	if (command->outfile && !command->pipe)
+	{
+		command->outfile_fd = open(command->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+		if (command->outfile_fd == -1)
+		{
+			perror("Opening Outfile failed");
+			// exit(1);
+		}
+		dup2(command->outfile_fd, STDOUT_FILENO);
+	}
+	ft_execute(command->commands[0], envp);
+	if (command->infile)
+		close(command->infile_fd);
+	if (command->outfile)
+		close(command->outfile_fd);
 }
 
-void	ft_parentproces(int *fd, char **argv, char **envp)
+void	ft_parentproces(t_command *command, char **envp)
 {
-	int	outfile;
-
-	outfile = open(argv[3], O_WRONLY | O_CREAT | O_TRUNC, 0777);
-	if (outfile == -1)
+	if (command->outfile)
 	{
-		perror("Opening Outfile failed");
-		exit(1);
+		command->outfile_fd = open(command->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+		if (command->outfile_fd == -1)
+		{
+			perror("Opening Outfile failed");
+			// exit(1);
+		}
+		dup2(command->outfile_fd, STDOUT_FILENO);
 	}
-	dup2(fd[0], STDIN_FILENO);
-	dup2(outfile, STDOUT_FILENO);
-	close(fd[1]);
-	ft_execute(argv[2], envp);
-	close(outfile);
+	dup2(command->fd[0], STDIN_FILENO);
+	close(command->fd[1]);
+	ft_execute(command->commands[1], envp);
+	if (command->outfile)
+		close(command->outfile_fd);
 }
 
-int	pipex(char **argv, char **envp)
+int	pipex(t_command *command, char **envp)
 {
-	int		fd[2];
 	pid_t	pid;
 
-	if (argv[1][0] == '\0' || argv[2][0] == '\0')
-		return (0);
-	if (pipe(fd) == -1)
+	if (command->pipe)
 	{
-		perror("Pipe Failed");
-		exit(1);
+		if (pipe(command->fd) == -1)
+		{
+			perror("Pipe Failed");
+			// exit(1);
+		}
 	}
 	pid = fork();
 	if (pid == -1)
 	{
 		perror("Fork Failed");
-		exit(1);
+		// exit(1);
 	}
 	if (pid == 0)
-		ft_childproces(fd, argv, envp);
+		ft_childproces(command, envp);
 	waitpid(pid, NULL, 0);
-	ft_parentproces(fd, argv, envp);
+	if (command->pipe)
+		ft_parentproces(command, envp);
 	return (1);
 }

@@ -4,6 +4,7 @@ SOURCES = \
 main.c \
 pipex.c \
 parsing.c \
+execute.c
 
 OBJS = $(SOURCES:.c=.o)
 
