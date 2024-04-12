@@ -6,7 +6,7 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/12 16:46:51 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/04/12 17:45:12 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,8 +140,11 @@ int	pipex(t_command *command, char **envp)
 	}
 	if (pid == 0)
 		ft_childproces(command, envp);
-	waitpid(pid, NULL, 0);
-	if (command->pipe)
-		ft_parentproces(command, envp);
+	else
+	{
+		waitpid(pid, NULL, 0);
+		if (command->pipe)
+			ft_parentproces(command, envp);
+	}
 	return (1);
 }
