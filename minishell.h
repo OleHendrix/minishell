@@ -27,6 +27,12 @@ typedef struct t_command
 	int		fd[2];
 } t_command;
 
+typedef struct t_list
+{
+	struct t_list	*next;
+	char	*str;
+}	t_list;
+
 int		pipex(t_command *command, char **envp);
 void	printstruct(t_command *command);
 void	init_command(t_command *command);
@@ -41,6 +47,7 @@ void	ft_parentproces(t_command *command, char **envp);
 void	ft_execute(char *argv, char **envp);
 char	*ft_findpath(char *cmd, char **envp);
 void	ft_free(char **cmd);
+void 	fill_struct2(char *line, char **envp);
 
 
 #endif
