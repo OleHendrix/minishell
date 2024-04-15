@@ -6,7 +6,7 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/12 17:45:12 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/04/15 15:32:02 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,27 @@ void	ft_parentproces(t_command *command, char **envp)
 		close(command->outfile_fd);
 }
 
+void	ft_handlepipe(t_command *command, char **envp)
+{
+	pid_t	pid;
+	pid_t	pid2;
+
+	pid = fork();
+	if (pid == 0)
+	{
+		pid2 = fork();
+		if (pid2 == 0)
+			ft_childproces(command, envp);
+		else
+		{
+			waitpid(pid2, NULL, 0);
+			ft_parentproces(command, envp);
+		}
+	}
+	else
+		waitpid(pid, NULL, 0);
+}
+
 int	pipex(t_command *command, char **envp)
 {
 	pid_t	pid;
@@ -132,19 +153,24 @@ int	pipex(t_command *command, char **envp)
 			// exit(1);
 		}
 	}
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("Fork Failed");
-		// exit(1);
-	}
-	if (pid == 0)
-		ft_childproces(command, envp);
+	if (command->pipe)
+		ft_handlepipe(command, envp);
 	else
 	{
-		waitpid(pid, NULL, 0);
-		if (command->pipe)
-			ft_parentproces(command, envp);
+		pid = fork();
+		if (pid == -1)
+		{
+			perror("Fork Failed");
+			// exit(1);
+		}
+		if (pid == 0)
+			ft_childproces(command, envp);
+		else
+		{
+			waitpid(pid, NULL, 0);
+			// if (command->pipe)
+			// 	ft_parentproces(command, envp);
+		}
 	}
 	return (1);
 }

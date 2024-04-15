@@ -34,12 +34,27 @@ void init_command(t_command *command)
 	command->pipe = false;
 }
 
+int ft_flags(char **tokens, int j)
+{
+	if (tokens[j + 1] == NULL)
+		return (1);
+	if (!ft_strncmp(tokens[j + 1], "|", 2))
+		return (1);
+	if (!ft_strncmp(tokens[j + 1], ">", 2))
+		return (1);
+	if (tokens[j][0] == '\"' || tokens[j][ft_strlen(tokens[j]) - 1] == '\"')
+		return (1);
+	return (0);
+}
+
 int	ft_checkflags(t_command *command, int i, char **tokens, int j)
 {
-	if (tokens[j + 1] == NULL || !ft_strncmp(tokens[j + 1], "|", 2) || !ft_strncmp(tokens[j + 1], ">", 2))
+	if (ft_flags(tokens, j))
 	{
 		if (j > 0 && ft_strncmp(tokens[j - 1], "|", 2))
 		{
+			if (tokens[j][0] == '\"'|| tokens[j][ft_strlen(tokens[j]) - 1] == '\"')
+				tokens[j] = ft_strtrim(tokens[j], "\"");
 			command->commands[i] = ft_strjoin(command->commands[i], " ");
 			command->commands[i] = ft_strjoin(command->commands[i], tokens[j]);
 			return (1);
@@ -117,6 +132,24 @@ void	init_commands(t_command *command, char **tokens)
 		}
 	}
 }
+
+// char **cat_tokens(char **tokens)
+// {
+// 	int i;
+
+// 	i = 0;
+// 	while (tokens[i])
+// 	{
+// 		if (tokens[i][0] == '\"')
+// 		{
+// 			tokens[i] = ft_strjoin(tokens[i], tokens[i + 1]);
+// 			if (tokens[i][ft_strlen(tokens[i]) - 1] != '\"')
+// 				i ++;
+// 			else 
+// 				break;
+// 		}
+// 	}
+// }
 
 void fill_struct(char *line, char **envp)
 {

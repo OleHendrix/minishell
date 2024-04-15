@@ -40,7 +40,6 @@ void	ft_free(char **cmd)
 // 		return (perror("Wrong syntax"));
 // }
 
-
 void parse_input(char **envp)
 {
 	char *line;
