@@ -40,6 +40,11 @@ void	ft_free(char **cmd)
 // 		return (perror("Wrong syntax"));
 // }
 
+void	ft_parsing(char *line, char **envp)
+{
+	fill_struct2(line, envp);
+}
+
 void parse_input(char **envp)
 {
 	char *line;

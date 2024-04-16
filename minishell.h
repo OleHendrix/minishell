@@ -14,13 +14,15 @@
 # include "./Libft/libft.h"
 # include "./Libft/ft_printf/libftprintf.h"
 
+typedef struct t_list t_list;
+
 typedef struct t_command
 {
 	char	*infile;
 	int		infile_fd;
 	char 	*outfile;
 	int		outfile_fd;
-	char	**commands;
+	struct t_list	*commands;
 	bool	here_doc;
 	char	*delimiter;
 	bool	pipe;
@@ -36,11 +38,15 @@ typedef struct t_list
 int		pipex(t_command *command, char **envp);
 void	printstruct(t_command *command);
 void	init_command(t_command *command);
-int		ft_checkflags(t_command *command, int i, char **tokens, int j);
-void	addcommand(t_command *command, char **tokens, int j);
+void	printstack(t_list **a);
+void	ft_addnode(t_list **list, char *token);
+void	combine_node(t_list **list);
+int		ft_checkflags(t_list **command, char **tokens, int j);
+void	addcommand(t_list **command, char **tokens, int j);
 void	init_files(t_command *command, char **tokens);
+int 	ft_flags(char **tokens, int j);
 void	init_commands(t_command *command, char **tokens);
-void	fill_struct(char *line, char **envp);
+void	fill_struct2(char *line, char **envp);
 void	ft_parsing(char *line, char **envp);
 void	ft_childproces(t_command *command, char **envp);
 void	ft_parentproces(t_command *command, char **envp);

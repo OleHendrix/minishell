@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   pipex.c                                            :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/15 15:32:02 by ohendrix      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   pipex.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/01/12 16:41:56 by ohendrix          #+#    #+#             */
+/*   Updated: 2024/04/16 19:53:19 by olehendrix       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void	ft_childproces(t_command *command, char **envp)
 		}
 		dup2(command->outfile_fd, STDOUT_FILENO);
 	}
-	ft_execute(command->commands[0], envp);
+	ft_execute(command->commands->str, envp);
 	if (command->infile)
 		close(command->infile_fd);
 	if (command->outfile)
@@ -115,7 +115,7 @@ void	ft_parentproces(t_command *command, char **envp)
 	}
 	dup2(command->fd[0], STDIN_FILENO);
 	close(command->fd[1]);
-	ft_execute(command->commands[1], envp);
+	ft_execute(command->commands->next->str, envp);
 	if (command->outfile)
 		close(command->outfile_fd);
 }
