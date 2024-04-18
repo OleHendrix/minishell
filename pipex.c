@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/12 16:41:56 by ohendrix          #+#    #+#             */
-/*   Updated: 2024/04/16 19:53:19 by olehendrix       ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   pipex.c                                            :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
+/*   Updated: 2024/04/18 13:58:39 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ void	ft_execute(char *argv, char **envp)
 	char	**cmd;
 	char	*path;
 	int		i;
+	pid_t	pid;
 
 	cmd = ft_split(argv, ' ');
 	path = ft_findpath(cmd[0], envp);
@@ -56,13 +57,20 @@ void	ft_execute(char *argv, char **envp)
 		perror("Command not found");
 		// exit(127);
 	}
-	if (execve(path, cmd, envp) == -1)
+	pid = fork();
+	if (pid == 0)
 	{
-		ft_free(cmd);
-		free(path);
-		perror("Execution failed");
-		// exit(1);
+		if (execve(path, cmd, envp) == -1)
+		{
+			ft_free(cmd);
+			free(path);
+			perror("Execution failed");
+			// exit(1);
+		}
 	}
+	else
+		waitpid(pid, NULL, 0);
+	printf("check\n\n");
 	ft_free(cmd);
 	free(path);
 }
@@ -81,8 +89,9 @@ void	ft_childproces(t_command *command, char **envp)
 	}
 	if (command->pipe)
 	{
-		dup2(command->fd[1], STDOUT_FILENO);
+		dup2(command->fd[1], STDOUT_FILENO); //kan fou gaan
 		close(command->fd[0]);
+		close(command->fd[1]);
 	}
 	if (command->outfile && !command->pipe)
 	{
@@ -103,6 +112,9 @@ void	ft_childproces(t_command *command, char **envp)
 
 void	ft_parentproces(t_command *command, char **envp)
 {
+	int	std_out;
+	int	std_in;
+
 	if (command->outfile)
 	{
 		command->outfile_fd = open(command->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0777);
@@ -111,35 +123,42 @@ void	ft_parentproces(t_command *command, char **envp)
 			perror("Opening Outfile failed");
 			// exit(1);
 		}
+		std_out = dup(STDOUT_FILENO);
 		dup2(command->outfile_fd, STDOUT_FILENO);
 	}
+	std_in = dup(STDIN_FILENO);
 	dup2(command->fd[0], STDIN_FILENO);
 	close(command->fd[1]);
+	close(command->fd[0]);
 	ft_execute(command->commands->next->str, envp);
 	if (command->outfile)
-		close(command->outfile_fd);
-}
-
-void	ft_handlepipe(t_command *command, char **envp)
-{
-	pid_t	pid;
-	pid_t	pid2;
-
-	pid = fork();
-	if (pid == 0)
 	{
-		pid2 = fork();
-		if (pid2 == 0)
-			ft_childproces(command, envp);
-		else
-		{
-			waitpid(pid2, NULL, 0);
-			ft_parentproces(command, envp);
-		}
+		close(command->outfile_fd);
+		dup2(std_out, 1);
 	}
-	else
-		waitpid(pid, NULL, 0);
+	dup2(std_in, STDIN_FILENO);
 }
+
+// void	ft_handlepipe(t_command *command, char **envp)
+// {
+// 	pid_t	pid;
+// 	pid_t	pid2;
+
+// 	pid = fork();
+// 	if (pid == 0)
+// 	{
+// 		pid2 = fork();
+// 		if (pid2 == 0)
+// 			ft_childproces(command, envp);
+// 		else
+// 		{
+// 			waitpid(pid2, NULL, 0);
+// 			ft_parentproces(command, envp);
+// 		}
+// 	}
+// 	else
+// 		waitpid(pid, NULL, 0);
+// }
 
 int	pipex(t_command *command, char **envp)
 {
@@ -153,24 +172,19 @@ int	pipex(t_command *command, char **envp)
 			// exit(1);
 		}
 	}
-	if (command->pipe)
-		ft_handlepipe(command, envp);
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("Fork Failed");
+		// exit(1);
+	}
+	if (pid == 0)
+		ft_childproces(command, envp);
 	else
 	{
-		pid = fork();
-		if (pid == -1)
-		{
-			perror("Fork Failed");
-			// exit(1);
-		}
-		if (pid == 0)
-			ft_childproces(command, envp);
-		else
-		{
-			waitpid(pid, NULL, 0);
-			// if (command->pipe)
-			// 	ft_parentproces(command, envp);
-		}
+		waitpid(pid, NULL, 0);
+		if (command->pipe)
+			ft_parentproces(command, envp);
 	}
 	return (1);
 }

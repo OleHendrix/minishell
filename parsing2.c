@@ -62,6 +62,7 @@ void	ft_addnode(t_list **list, char *token)
 		lastnode = lastnode->next;
 	lastnode->next = newnode;
 }
+
 void	trim_quotes(t_list **list)
 {
 	t_list	*begin;
@@ -261,6 +262,6 @@ void fill_struct2(char *line, char **envp)
 	init_commands(&command, tokens);
 	combine_empty_quote(&command.commands);
 	combine_node(&command.commands);
-	// pipex(&command, envp);
-	printstruct(&command);
+	pipex(&command, envp);
+	// printstruct(&command);
 }
