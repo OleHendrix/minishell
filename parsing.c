@@ -5,8 +5,8 @@ void printstruct(t_command *command)
 	int	i;
 
 	i = 0;
-	if (command->pipe)
-		printf("pipe: true\n");
+	if (command->pipes)
+		printf("pipe: %d\n", command->pipes);
 	if (command->infile)
 		printf("infile: %s\n", command->infile);
 	if (command->outfile)
@@ -16,12 +16,12 @@ void printstruct(t_command *command)
 	if (command->delimiter)
 		printf("delimiter: %s\n", command->delimiter);
 	if (command->commands)
-		printf("commands:\n");
-	while (command->commands != NULL && command->commands[i] != NULL)
 	{
-		printf("%s\n", command->commands[i]);
-		i++;
+		printf("commands:\n");
+		printstack(&command->commands);
 	}
+	if (command->cmd_count)
+		printf("cmd_count: %d\n", command->cmd_count);
 }
 
 void init_command(t_command *command)
@@ -31,204 +31,261 @@ void init_command(t_command *command)
 	command->outfile = NULL;
 	command->here_doc = false;
 	command->delimiter = NULL;
-	command->pipe = false;
+	command->cmd_count = 0;
+	command->cmd_tracker = 0;
+	command->pipes = 0;
 }
 
-// int ft_flags(char **tokens, int j)
-// {
-// 	if (tokens[j + 1] == NULL)
-// 		return (1);
-// 	if (!ft_strncmp(tokens[j + 1], "|", 2))
-// 		return (1);
-// 	if (!ft_strncmp(tokens[j + 1], ">", 2))
-// 		return (1);
-// 	if (tokens[j][0] == '\"' || tokens[j][ft_strlen(tokens[j]) - 1] == '\"')
-// 		return (1);
-// 	return (0);
-// }
-
-// int	ft_checkflags(t_command *command, int i, char **tokens, int j)
-// {
-// 	if (ft_flags(tokens, j))
-// 	{
-// 		if (j > 0 && ft_strncmp(tokens[j - 1], "|", 2))
-// 		{
-// 			if (tokens[j][0] == '\"')|| tokens[j][ft_strlen(tokens[j]) - 1] == '\"')
-// 				tokens[j] = ft_strtrim(tokens[j], "\"");
-// 			command->commands[i] = ft_strjoin(command->commands[i], " ");
-// 			command->commands[i] = ft_strjoin(command->commands[i], tokens[j]);
-// 			return (1);
-// 		}
-// 	}
-// 	return (0);
-// }
-
-// void	addcommand(t_command *command, char **tokens, int j)
-// {
-// 	int	i;
-// 	char **commands2;
-
-// 	i = 0;
-// 	while (command->commands && command->commands[i] != NULL)
-// 		i++;
-// 	if (command->commands)
-// 	{
-// 		if (ft_checkflags(command, i - 1, tokens, j))
-// 			return ;
-// 	}
-// 	commands2 = realloc(command->commands, sizeof(char *) * (i + 2));
-// 	if (!commands2)
-// 		return ;
-// 	commands2[i] = ft_strdup(tokens[j]);
-// 	commands2[i + 1] = NULL; 
-// 	command->commands = commands2;
-// }
-
-// void init_files(t_command *command, char **tokens)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	while (tokens[i] != NULL)
-// 	{
-// 		if (!ft_strncmp(tokens[i], "<", 2))
-// 		{
-// 			command->infile = ft_strdup(tokens[i + 1]);
-// 			i++;
-// 		}
-// 		else if (!ft_strncmp(tokens[i], ">", 2))
-// 		{
-// 			command->outfile = ft_strdup(tokens[i + 1]);
-// 			i++;
-// 		}
-// 		i++;
-// 	}
-// }
-
-// void	init_commands(t_command *command, char **tokens)
-// {
-// 	int i;
-
-// 	i = 0;
-// 	while (tokens[i] != NULL)
-// 	{
-// 		if (!ft_strncmp(tokens[i], "<", 2) || !ft_strncmp(tokens[i], ">", 2))
-// 			i += 2;
-// 		else if (!ft_strncmp(tokens[i], "|", 2))
-// 		{
-// 			command->pipe = true;
-// 			i++;
-// 		}
-// 		else if (!ft_strncmp(tokens[i], "<<", 3))
-// 		{
-// 			command->here_doc = true;
-// 			command->delimiter = ft_strdup(tokens[i + 1]);
-// 			i += 2;
-// 		}
-// 		else
-// 		{
-// 			addcommand(command, tokens, i);
-// 			i++;
-// 		}
-// 	}
-// }
-
-// char **cat_tokens(char **tokens)
-// {
-// 	int i;
-
-// 	i = 0;
-// 	while (tokens[i])
-// 	{
-// 		if (tokens[i][0] == '\"')
-// 		{
-// 			tokens[i] = ft_strjoin(tokens[i], tokens[i + 1]);
-// 			if (tokens[i][ft_strlen(tokens[i]) - 1] != '\"')
-// 				i ++;
-// 			else 
-// 				break;
-// 		}
-// 	}
-// 	return (NULL);
-// }
-// char **ft_copytokens(char **tokens, char **tokens2, int i, int j)
-// {
-// 	int	k;
-// 	int l;
-
-// 	k = 0;
-// 	while (tokens[k][0] != '\"' && tokens[k] != NULL)
-// 	{
-// 		tokens2[k] = ft_strdup(tokens[k]);
-// 		k++;
-// 	}
-// 	l = k;
-// 	while (tokens[k] != NULL)
-// 	{
-// 		tokens2[l] = ft_strjoin(tokens2[l], tokens[k]);
-// 		if (tokens[k][ft_strlen(tokens[k + 1]) - 1] != '\"')
-// 			tokens2[l] = ft_strjoin(tokens2[l], " ");
-// 		if (tokens[k][ft_strlen(tokens[k]) - 1] == '\"')
-// 			break;
-// 		k++;
-// 	}
-// 	k++;
-// 	l++;
-// 	while (tokens[k] != NULL)
-// 	{
-// 		tokens2[l] = ft_strdup(tokens[k]);
-// 		l++;
-// 		k++;
-// 	}
-// 	tokens2[l] = NULL; 
-// 	return (tokens2);
-// }
-
-// char **addquotes(char **tokens)
-// {
-// 	int	i;
-// 	int	j;
-// 	int count;
-// 	char **tokens2;
-
-// 	i = 0;
-// 	j = 0;
-// 	count = 0;
-// 	while (tokens[count] != NULL)
-// 		count++;
-// 	while (tokens[i][0] != '\"' && tokens[i] != NULL)
-// 		i++;
-// 	while (tokens[j][ft_strlen(tokens[j]) - 1] != '\"' && tokens[j] != NULL)
-// 		j++;
-// 	tokens2 = malloc(sizeof(char *) * (count - (j - i) + 1));
-// 	return (ft_copytokens(tokens, tokens2, i, j));
-// }
-
-// void fill_struct(char *line, char **envp)
-// {
-// 	t_command	command;
-// 	int			i;
-// 	char		**tokens;
-
-// 	init_command(&command);
-// 	i = 0;
-// 	tokens = ft_split(line, ' ');
-// 	tokens = addquotes(tokens);
-// 	while (tokens[i] != NULL)
-// 	{
-// 		printf("%s\n", tokens[i]);
-// 		i++;
-// 	}
-
-
-
-// 	// init_files(&command, tokens);
-// 	// init_commands(&command, tokens);
-// 	// pipex(&command, envp);
-// 	// printstruct(&command);
-// }
-
-void	ft_parsing(char *line, char **envp)
+void	printstack(t_list **a)
 {
-	fill_struct2(line, envp);
+	t_list	*begin;
+
+	begin = *a;
+	while (begin != NULL)
+	{
+		printf("%s\n", begin->str);
+		begin = begin->next;
+	}
+}
+
+void	ft_addnode(t_list **list, char *token)
+{
+	t_list	*newnode;
+	t_list	*lastnode;
+
+	newnode = malloc(sizeof(t_list));
+	newnode->str = ft_strdup(token);
+	newnode->next = NULL;
+	if (*list == NULL)
+	{
+		*list = newnode;
+		return ;
+	}
+	lastnode = *list;
+	while (lastnode->next != NULL)
+		lastnode = lastnode->next;
+	lastnode->next = newnode;
+}
+
+void	trim_quotes(t_list **list)
+{
+	t_list	*begin;
+
+	begin = *list;
+	if (*list == NULL)
+		return ;
+	while ((*list) != NULL)
+	{
+		if ((*list)->next != NULL && (*list)->next->str[0] == '\"')
+		{
+			(*list)->next->str = ft_strtrim((*list)->next->str, "\"");
+			(*list)->str = ft_strjoin((*list)->str, " ");
+			(*list)->str = ft_strjoin((*list)->str, (*list)->next->str);
+			(*list)->next = (*list)->next->next;
+		}
+		(*list) = (*list)->next;
+	}
+	*list = begin;
+}
+
+void	combine_node(t_list **list)
+{
+	t_list *begin;
+
+	begin = *list;
+	if (begin == NULL)
+		return ;
+	while (begin->next != NULL)
+	{
+		// if (!ft_strncmp(begin->str, "\" ", 2))
+		// {
+		// 	begin->str = ft_strjoin(begin->str, begin->next->str);
+		// 	begin->next = begin->next->next;
+		// 	combine_node(&begin);
+		// }
+		if (begin->str[0] != '\"')
+			begin = begin->next;
+		else if (begin->str[0] == '\"' && begin->str[ft_strlen(begin->str) -1] != '\"')
+		{
+			begin->str = ft_strjoin(begin->str, " ");
+			begin->str = ft_strjoin(begin->str, begin->next->str);
+			begin->next = begin->next->next;
+			combine_node(&begin);
+		}
+		else
+			begin = begin->next;
+	}
+	trim_quotes(list);
+}
+
+void init_files(t_command *command, char **tokens)
+{
+	int	i;
+	bool inquotes;
+
+	i = 0;
+	inquotes = false;
+	while (tokens[i] != NULL)
+	{
+		if (tokens[i][0] == '\"' && !inquotes)
+			inquotes = true;
+		if (ft_strlen(tokens[i]) > 1 && tokens[i][ft_strlen(tokens[i]) - 1] == '\"')
+			inquotes = false;
+		if (!ft_strncmp(tokens[i], "<", 2) && !inquotes)
+		{
+			command->infile = ft_strdup(tokens[i + 1]);
+			i++;
+		}
+		if (!ft_strncmp(tokens[i], ">", 2) && !inquotes)
+		{
+			command->outfile = ft_strdup(tokens[i + 1]);
+			i++;
+		}
+		i++;
+	}
+}
+
+
+int ft_flags(char **tokens, int j)
+{
+	if (tokens[j + 1] == NULL && tokens[j][0] != '\"')
+		return (1);
+	if (tokens[j + 1] == NULL && tokens[j][0] == '\"')
+	{
+		tokens[j] = ft_strtrim(tokens[j], "\"");
+		return (1);
+	}
+	if (!ft_strncmp(tokens[j + 1], "|", 2) && tokens[j][0] != '\"')
+		return (1);
+	if (!ft_strncmp(tokens[j + 1], ">", 2) && tokens[j][0] != '\"')
+		return (1);
+	return (0);
+}
+
+int	ft_checkflags(t_list **commands, char **tokens, int j)
+{
+	t_list	*lastnode;
+
+	if (*commands == NULL)
+		return (0);
+	lastnode = *commands;
+	while (lastnode->next != NULL)
+			lastnode = lastnode->next;
+	if (ft_flags(tokens, j))
+	{
+		if (j > 0 && ft_strncmp(tokens[j - 1], "|", 2) && ft_strncmp(tokens[j - 1], "<", 2) && ft_strncmp(tokens[j - 1], ">", 2))
+		{
+			lastnode->str = ft_strjoin(lastnode->str, " ");
+			lastnode->str = ft_strjoin(lastnode->str, tokens[j]);
+			return (1);
+		}
+	}
+	return (0);
+}
+void	addcommand(t_list **commands, char **tokens, int j)
+{
+	t_list	*newnode;
+	t_list	*lastnode;
+
+	if (ft_checkflags(commands, tokens, j))
+		return;
+	newnode = malloc(sizeof(t_list));
+	newnode->str = ft_strdup(tokens[j]);
+	newnode->next = NULL;
+	if (*commands == NULL)
+	{
+		*commands = newnode;
+		return ;
+	}
+	lastnode = *commands;
+	while (lastnode->next != NULL)
+		lastnode = lastnode->next;
+	lastnode->next = newnode;
+}
+
+void	init_commands(t_command *command, char **tokens)
+{
+	int i;
+	bool inquotes;
+
+	i = 0;
+	inquotes = false;
+	while (tokens[i] != NULL)
+	{
+		if (tokens[i][0] == '\"')
+			inquotes = true;
+		if (ft_strlen(tokens[i]) > 1 && tokens[i][ft_strlen(tokens[i]) - 1] == '\"')
+			inquotes = false;
+		if ((!ft_strncmp(tokens[i], "<", 2) || !ft_strncmp(tokens[i], ">", 2)) && !inquotes)
+			i++;
+		else if (!ft_strncmp(tokens[i], "|", 2) && !inquotes)
+			command->pipes ++;
+		else if (!ft_strncmp(tokens[i], "<<", 3) && !inquotes)
+		{
+			command->here_doc = true;
+			command->delimiter = ft_strdup(tokens[i + 1]);
+			i++;
+		}
+		else
+			addcommand(&command->commands, tokens, i);
+		i++;
+	}
+}
+
+void combine_empty_quote(t_list **list)
+{
+	t_list *begin;
+
+	begin = *list;
+
+	if (begin == NULL)
+		return ;
+	while (begin->next != NULL)
+	{
+		if (!ft_strncmp(begin->str, "\"", 2))
+		{
+			begin->str = ft_strjoin(begin->str, begin->next->str);
+			begin->next = begin->next->next;
+		}
+		else
+			begin = begin->next;
+	}
+}
+
+int	count_commands(t_list **list)
+{
+	t_list *current;
+	int		i;
+
+	i = 0;
+	current = *list;
+	while (current)
+	{
+		current = current->next;
+		i ++;
+	}
+	return (i);
+}
+
+void fill_struct(char *line, char **envp)
+{
+	t_command	command;
+	int			i;
+	char		**tokens;
+
+	init_command(&command);
+	i = 0;
+	tokens = ft_split(line, ' ');
+
+	init_files(&command, tokens);
+	init_commands(&command, tokens);
+	combine_empty_quote(&command.commands);
+	combine_node(&command.commands);
+	command.cmd_count = count_commands(&command.commands);
+	// printstruct(&command);
+	command.pid = fork();
+	if (!command.pid)
+		pipex(envp, &command);
+	else
+		waitpid(command.pid, NULL, 0);
 }

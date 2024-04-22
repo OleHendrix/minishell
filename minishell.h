@@ -14,7 +14,11 @@
 # include "./Libft/libft.h"
 # include "./Libft/ft_printf/libftprintf.h"
 
-typedef struct t_list t_list;
+typedef struct t_list
+{
+	struct t_list	*next;
+	char	*str;
+}	t_list;
 
 typedef struct t_command
 {
@@ -23,19 +27,17 @@ typedef struct t_command
 	char 	*outfile;
 	int		outfile_fd;
 	struct t_list	*commands;
+	int		cmd_count;
+	int		cmd_tracker;
 	bool	here_doc;
 	char	*delimiter;
-	bool	pipe;
+	int		pipes;
 	int		fd[2];
+	pid_t	pid;
 } t_command;
 
-typedef struct t_list
-{
-	struct t_list	*next;
-	char	*str;
-}	t_list;
 
-int		pipex(t_command *command, char **envp);
+void	fill_struct(char *line, char **envp);
 void	printstruct(t_command *command);
 void	init_command(t_command *command);
 void	printstack(t_list **a);
@@ -46,14 +48,16 @@ void	addcommand(t_list **command, char **tokens, int j);
 void	init_files(t_command *command, char **tokens);
 int 	ft_flags(char **tokens, int j);
 void	init_commands(t_command *command, char **tokens);
-void	fill_struct2(char *line, char **envp);
-void	ft_parsing(char *line, char **envp);
-void	ft_childproces(t_command *command, char **envp);
-void	ft_parentproces(t_command *command, char **envp);
-void	ft_execute(char *argv, char **envp);
 char	*ft_findpath(char *cmd, char **envp);
 void	ft_free(char **cmd);
-void 	fill_struct2(char *line, char **envp);
+void	addcommand(t_list **commands, char **tokens, int j);
+void	pipex(char **envp, t_command *command);
+void	ft_free(char **cmd);
+int		*create_pipe(void);
+pid_t	ft_fork(void);
+char	*getcommand(t_command *command);
+void	free_list(t_command *command);
+
 
 
 #endif

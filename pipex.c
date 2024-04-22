@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   pipex.c                                            :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
+/*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/18 13:58:39 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/04/22 16:18:50 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@ char	*ft_findpath(char *cmd, char **envp)
 	while (ft_strnstr(envp[i], "PATH", 4) == 0)
 		i++;
 	paths = ft_split(envp[i] + 5, ':');
+	if (paths == NULL)
+	{
+		perror("ERROR IN SPLIT");
+		exit(1);
+	}
 	i = 0;
 	while (paths[i])
 	{
@@ -41,150 +46,80 @@ char	*ft_findpath(char *cmd, char **envp)
 	return (NULL);
 }
 
-void	ft_execute(char *argv, char **envp)
+void	ft_execute(char **envp, t_command *command)
 {
-	char	**cmd;
+	char	**cmd_split;
 	char	*path;
-	int		i;
-	pid_t	pid;
+	char 	*cmd;
 
-	cmd = ft_split(argv, ' ');
-	path = ft_findpath(cmd[0], envp);
-	i = 0;
+	cmd = getcommand(command);
+	cmd_split = ft_split(cmd, ' ');
+	if (cmd_split == NULL)
+	{
+		perror("ERROR IN SPLIT");
+		exit(1);
+	}
+	path = ft_findpath(cmd_split[0], envp);
 	if (path == NULL)
 	{
-		ft_free(cmd);
+		ft_free(cmd_split);
 		perror("Command not found");
-		// exit(127);
+		exit(127);
 	}
-	pid = fork();
-	if (pid == 0)
+	if (execve(path, cmd_split, envp) == -1)
 	{
-		if (execve(path, cmd, envp) == -1)
-		{
-			ft_free(cmd);
-			free(path);
-			perror("Execution failed");
-			// exit(1);
-		}
+		ft_free(cmd_split);
+		free(path);
+		perror("Execution failed");
+		exit(1);
 	}
-	else
-		waitpid(pid, NULL, 0);
-	printf("check\n\n");
-	ft_free(cmd);
+	ft_free(cmd_split);
 	free(path);
 }
 
-void	ft_childproces(t_command *command, char **envp)
-{	
+void	ft_childproces(int fd[2], char **envp, t_command *command)
+{
+	close(fd[0]);
+	dup2(fd[1], STDOUT_FILENO);
+	ft_execute(envp, command);
+}
+
+void	config_files(t_command *command)
+{
 	if (command->infile)
 	{
 		command->infile_fd = open(command->infile, O_RDONLY, 0777);
-		if (command->infile_fd == -1)
-		{
-			perror("Opening Infile fssssailed");
-			// exit(1);
-		}
 		dup2(command->infile_fd, STDIN_FILENO);
 	}
-	if (command->pipe)
-	{
-		dup2(command->fd[1], STDOUT_FILENO); //kan fou gaan
-		close(command->fd[0]);
-		close(command->fd[1]);
-	}
-	if (command->outfile && !command->pipe)
-	{
-		command->outfile_fd = open(command->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-		if (command->outfile_fd == -1)
-		{
-			perror("Opening Outfile failed");
-			// exit(1);
-		}
-		dup2(command->outfile_fd, STDOUT_FILENO);
-	}
-	ft_execute(command->commands->str, envp);
-	if (command->infile)
-		close(command->infile_fd);
-	if (command->outfile)
-		close(command->outfile_fd);
-}
-
-void	ft_parentproces(t_command *command, char **envp)
-{
-	int	std_out;
-	int	std_in;
-
 	if (command->outfile)
 	{
 		command->outfile_fd = open(command->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-		if (command->outfile_fd == -1)
-		{
-			perror("Opening Outfile failed");
-			// exit(1);
-		}
-		std_out = dup(STDOUT_FILENO);
 		dup2(command->outfile_fd, STDOUT_FILENO);
 	}
-	std_in = dup(STDIN_FILENO);
-	dup2(command->fd[0], STDIN_FILENO);
-	close(command->fd[1]);
-	close(command->fd[0]);
-	ft_execute(command->commands->next->str, envp);
-	if (command->outfile)
-	{
-		close(command->outfile_fd);
-		dup2(std_out, 1);
-	}
-	dup2(std_in, STDIN_FILENO);
 }
 
-// void	ft_handlepipe(t_command *command, char **envp)
-// {
-// 	pid_t	pid;
-// 	pid_t	pid2;
-
-// 	pid = fork();
-// 	if (pid == 0)
-// 	{
-// 		pid2 = fork();
-// 		if (pid2 == 0)
-// 			ft_childproces(command, envp);
-// 		else
-// 		{
-// 			waitpid(pid2, NULL, 0);
-// 			ft_parentproces(command, envp);
-// 		}
-// 	}
-// 	else
-// 		waitpid(pid, NULL, 0);
-// }
-
-int	pipex(t_command *command, char **envp)
+void	pipex(char **envp, t_command *command)
 {
-	pid_t	pid;
+	pid_t		pid;
+	int			*fd;
 
-	if (command->pipe)
+	pid = getpid();
+	config_files(command);
+	while (command->cmd_tracker < command->cmd_count - 1 && pid != 0)
 	{
-		if (pipe(command->fd) == -1)
+		fd = create_pipe();
+		pid = ft_fork();
+		if (!pid)
+			ft_childproces(fd, envp, command);
+		else
 		{
-			perror("Pipe Failed");
-			// exit(1);
+			close(fd[1]);
+			dup2(fd[0], STDIN_FILENO);
+			waitpid(pid, NULL, 0);
 		}
+		command->cmd_tracker++;
+		free(fd);
 	}
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("Fork Failed");
-		// exit(1);
-	}
-	if (pid == 0)
-		ft_childproces(command, envp);
-	else
-	{
-		waitpid(pid, NULL, 0);
-		if (command->pipe)
-			ft_parentproces(command, envp);
-	}
-	return (1);
+	ft_execute(envp, command);
+	free_list(command);
 }
