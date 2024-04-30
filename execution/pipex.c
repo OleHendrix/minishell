@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/30 14:29:53 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/04/30 16:23:36 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	ft_execute(char **envp, t_command *command)
 	char 	*cmd;
 
 	cmd = getcommand(command);
-	if (built_in(command, cmd) > 0)
+	if (built_in(command, envp, cmd) > 0)
 		return ;
 	cmd_split = ft_split(cmd, ' ');
 	if (cmd_split == NULL)

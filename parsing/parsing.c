@@ -103,18 +103,18 @@ void fill_struct(char *line, char **envp, char *mode)
 		return (ft_putstr_fd("ERROR IN SPLIT", 2));
 	init_files(&command, command.tokens);
 	init_commands(&command, command.tokens);
-	command.cmd_count = count_commands(&command.commands);
-	// trim_quotes(&command.commands);
-	if (mode && !ft_strncmp(mode, "test", 5))
-		printstruct(&command);
-	else
-	{
-		command.pid = fork();
-		if (!command.pid)
-			pipex(envp, &command);
-		else
-			waitpid(command.pid, NULL, 0);
-	}
-	ft_free_struct(&command);
+	// command.cmd_count = count_commands(&command.commands);
+	// // trim_quotes(&command.commands);
+	// if (mode && !ft_strncmp(mode, "test", 5))
+	// 	printstruct(&command);
+	// else
+	// {
+	// 	command.pid = fork();
+	// 	if (!command.pid)
+	// 		pipex(envp, &command);
+	// 	else
+	// 		waitpid(command.pid, NULL, 0);
+	// }
+	// ft_free_struct(&command);
 	free(line);
 }

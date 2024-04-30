@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 14:27:30 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/30 13:47:59 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/04/30 16:19:40 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void parse_input(char **envp, char *mode)
 			perror("Wrong syntax");
 			free(line);
 		}
-		else
+		else if (!built_in_perm(envp, line))
 			fill_struct(line, envp, mode);
 	}
 	free(line);

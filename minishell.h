@@ -115,12 +115,12 @@ void	sig_handler(int sig, siginfo_t *info, void *context);
 void	init_signals();
 
 //built_in.c
-int		built_in(t_command *command, char *cmd);
+int		built_in_perm(char **envp, char *line);
+int		built_in(t_command *command, char **envp, char *cmd);
 
 //BUILTINS
 void	ft_echo(t_command *command, char *cmd);
-
-
+void	ft_cd(t_command *command, char **envp, char *cmd);
 
 
 

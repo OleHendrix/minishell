@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:24:09 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/30 13:07:51 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/04/30 17:07:30 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ void	ft_variable(t_command *command, int j)
 			command->tokens[j] = ft_expandvariable(command, command->tokens[j], i + 1);
 		i++;
 	}
+	printf("%s\n", command->tokens[j]);
 	command->inquotes = false;
 	// {
 	// 	t_list *newnode;
