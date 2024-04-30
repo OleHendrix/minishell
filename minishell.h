@@ -19,8 +19,6 @@ typedef struct t_list
 {
 	struct t_list	*next;
 	char	*str;
-	bool	d_quotes;
-	bool 	s_quotes;
 }	t_list;
 
 typedef struct t_command
@@ -38,6 +36,7 @@ typedef struct t_command
 	bool	here_doc;
 	char	*delimiter;
 	int		pipes;
+	bool	newcom;
 	int		fd[2];
 	pid_t	pid;
 } t_command;
@@ -72,14 +71,15 @@ void 	free_ptr_ptr(char **array);
 void	ft_free_struct(t_command *command);
 
 //flag_utils.c
-int 	ft_flags(char **tokens, int j);
-int		ft_checkflags(t_command *command, int j);
+// int 	ft_flags(char **tokens, int j);
+void	ft_checkflags(t_command *command, int j);
 
 //ft_supersplit.c
 int		ft_countwords(char *s, char c);
 void	ft_fill(char *s, char **result, int k, int j);
 void	ft_suballoc(char *s, char c, char **result, t_split split);
-char	**ft_supersplit(char *s, char c);
+// char	**ft_supersplit(char *s, char c);
+void	ft_supersplit(char *s, char c, t_command *command);
 
 //parsing_utils.c
 void	printstruct(t_command *command);
@@ -109,6 +109,20 @@ void	ft_execute(char **envp, t_command *command);
 void	ft_childproces(int fd[2], char **envp, t_command *command);
 void	config_files(t_command *command);
 void	pipex(char **envp, t_command *command);
+
+//signals.c
+void	sig_handler(int sig, siginfo_t *info, void *context);
+void	init_signals();
+
+//built_in.c
+int		built_in(t_command *command, char *cmd);
+
+//BUILTINS
+void	ft_echo(t_command *command, char *cmd);
+
+
+
+
 
 
 #endif

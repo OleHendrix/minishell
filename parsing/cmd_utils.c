@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:24:09 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/29 17:49:07 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/04/30 13:07:51 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void init_struct(t_command *command)
 	command->cmd_count = 0;
 	command->cmd_tracker = 0;
 	command->pipes = 0;
+	command->newcom = false;
 }
 
 char *ft_append(char *token, char *value, int i, int j)
@@ -106,8 +107,11 @@ void	addcommand(t_command *command, int j)
 
 	command->tokens[j] = ft_strtrim(command->tokens[j], "\""); //nieuwe strtim maken die alleen 1 aanhalingsteken trimt??
 	ft_variable(command, j);
-	if (ft_checkflags(command, j))
-		return;
+	if (!command->newcom)
+	{
+		ft_checkflags(command, j);
+		return ;
+	}
 	newnode = malloc(sizeof(t_list));
 	if (!newnode)
 		ft_mallocfail(command, "MALLOC FAILED IN ADDCOMMAND");
@@ -122,6 +126,7 @@ void	addcommand(t_command *command, int j)
 	while (lastnode->next != NULL)
 		lastnode = lastnode->next;
 	lastnode->next = newnode;
+	command->newcom = false;
 }
 
 void init_commands(t_command *command, char **tokens)
@@ -134,7 +139,10 @@ void init_commands(t_command *command, char **tokens)
 		if ((!ft_strncmp(tokens[i], "<", 2) || !ft_strncmp(tokens[i], ">", 2)))
 			i++;
 		else if (!ft_strncmp(tokens[i], "|", 2))
+		{
 			command->pipes++;
+			command->newcom = true;
+		}
 		else if (!ft_strncmp(tokens[i], "<<", 3))
 		{
 			command->here_doc = true;

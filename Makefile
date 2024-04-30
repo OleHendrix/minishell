@@ -2,6 +2,7 @@ NAME = minishell
 
 PARS_DIR = ./parsing
 EXE_DIR = ./execution
+BUILTIN_DIR = ./builtins
 
 SOURCES = \
 main.c \
@@ -13,11 +14,15 @@ $(PARS_DIR)/parsing.c \
 $(PARS_DIR)/ft_supersplit.c \
 $(PARS_DIR)/checksyntax.c \
 $(EXE_DIR)/pipex.c \
-$(EXE_DIR)/pipe_utils.c
+$(EXE_DIR)/pipe_utils.c \
+$(EXE_DIR)/built_in.c \
+$(BUILTIN_DIR)/echo.c \
+signals.c
+
 
 OBJS = $(SOURCES:.c=.o)
 
-# CFLAGS = -Wall -Werror -Wextra -g
+CFLAGS = -g ## -Wall -Werror -Wextra -g
 
 all: $(NAME)
 

@@ -6,7 +6,7 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/10/31 15:07:27 by ohendrix      #+#    #+#                 */
-/*   Updated: 2023/11/01 16:35:24 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/04/30 12:42:51 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static int	ft_start(char const *s1, char const *set)
 	return (start);
 }
 
-char	*ft_strtrim(char const *s1, char const *set)
+char	*ft_strtrim(char *s1, char const *set)
 {
 	char	*string;
 	int		start;
@@ -64,6 +64,7 @@ char	*ft_strtrim(char const *s1, char const *set)
 		string[i] = s1[start + i];
 		i++;
 	}
+	free(s1);
 	string[i] = '\0';
 	return (string);
 }

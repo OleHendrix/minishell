@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_supersplit.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/24 13:27:01 by ohendrix          #+#    #+#             */
-/*   Updated: 2024/04/25 23:51:51 by olehendrix       ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   ft_supersplit.c                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/04/24 13:27:01 by ohendrix      #+#    #+#                 */
+/*   Updated: 2024/04/30 13:38:57 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ int	ft_countwords(char *s, char c)
 			i++;
 		}
 	}
+	// printf("wordcount %d\n", j);
 	return (j);
 }
 
@@ -54,7 +55,7 @@ void	ft_fill(char *s, char **result, int k, int j)
 		result[j -1][i] = s[i];
 		i++;
 	}
-	result[j -1][i] = '\0';
+	result[j - 1][i] = '\0';
 }
 
 void	ft_suballoc(char *s, char c, char **result, t_split split)
@@ -80,18 +81,17 @@ void	ft_suballoc(char *s, char c, char **result, t_split split)
 		}
 		ft_fill(s + (split.i - split.k), result, split.k, split.j);
 	}
+	// printf("s: %s, i: %d, k: %d, j: %d\n", s, split.i, split.k, split.j);
 }
 
-char	**ft_supersplit(char *s, char c)
+void	ft_supersplit(char *s, char c, t_command *command)
 {
-	char	**result;
 	t_split	split;
 	int		wordcount;
 
 	split = (t_split){0, 0, 0, false, false};
 	wordcount = ft_countwords(s, c);
-	result = malloc(sizeof(char *) * (wordcount + 1));
-	result[wordcount] = NULL;
-	ft_suballoc(s, c, result, split);
-	return (result);
+	command->tokens = malloc(sizeof(char *) * (wordcount + 1));
+	command->tokens[wordcount] = NULL;
+	ft_suballoc(s, c, command->tokens, split);
 }

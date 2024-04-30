@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   exit_utils.c                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/22 16:37:48 by ohendrix          #+#    #+#             */
-/*   Updated: 2024/04/25 16:23:32 by olehendrix       ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   exit_utils.c                                       :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/04/22 16:37:48 by ohendrix      #+#    #+#                 */
+/*   Updated: 2024/04/30 13:39:40 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@ void	ft_free_struct(t_command *command)
 		free(command->infile);
 	if (command->outfile)
 		free(command->outfile);
-	// if (command->commands)
-		// free_list(command->commands);
+	if (command->commands)
+		free_list(command->commands);
 	if (command->tokens)
 		free_ptr_ptr(command->tokens);
 	if (command->delimiter)

@@ -97,14 +97,14 @@ void fill_struct(char *line, char **envp, char *mode)
 
 	(void)envp;
 	init_struct(&command);
-	command.tokens = ft_supersplit(line, ' ');
+	ft_supersplit(line, ' ', &command);
 	// print_list(command.tokens);
 	if (!command.tokens)
 		return (ft_putstr_fd("ERROR IN SPLIT", 2));
 	init_files(&command, command.tokens);
 	init_commands(&command, command.tokens);
 	command.cmd_count = count_commands(&command.commands);
-	trim_quotes(&command.commands);
+	// trim_quotes(&command.commands);
 	if (mode && !ft_strncmp(mode, "test", 5))
 		printstruct(&command);
 	else
@@ -116,4 +116,5 @@ void fill_struct(char *line, char **envp, char *mode)
 			waitpid(command.pid, NULL, 0);
 	}
 	ft_free_struct(&command);
+	free(line);
 }
