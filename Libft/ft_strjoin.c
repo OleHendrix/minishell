@@ -6,13 +6,13 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/10/31 15:03:09 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/02 13:22:36 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/04/23 13:38:05 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char *s1, char const *s2)
 {
 	char	*string;
 	int		i;
@@ -37,6 +37,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		j++;
 	}
 	string[i + j] = '\0';
+	free(s1);
 	return (string);
 }
 
