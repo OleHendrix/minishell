@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   built_in.c                                         :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/30 14:17:36 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/30 17:02:10 by ohendrix      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   built_in.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/30 14:17:36 by ohendrix          #+#    #+#             */
+/*   Updated: 2024/05/01 20:13:32 by olehendrix       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int built_in_perm(char **envp, char *line)
+int built_in_perm(t_command *command, char *line)
 {
 	int	i;
 	bool quotes;
@@ -30,14 +30,18 @@ int built_in_perm(char **envp, char *line)
 	if (!ft_strncmp(line, "cd", 2) && (line[2] == ' ' || line[2] == '\0'))
 	{
 		if (line[2] == '\0')
-			return (ft_cd(NULL, envp, NULL), 1);
+			return (ft_cd(NULL, NULL), 1);
 		else
-			return (ft_cd(NULL, envp, line + 3), 1);
+			return (ft_cd(NULL, line + 3), 1);
 	}
+	if (!ft_strncmp(line, "export ", 7))
+		return (ft_export(command, line + 7), 1);
+	if (!ft_strncmp(line, "unset ", 6))
+		return (ft_unset(command, line + 6), 1);
 	return (0);
 }
 
-int	built_in(t_command *command, char **envp, char *cmd)
+int	built_in(t_command *command, char *cmd)
 {
 	if (!ft_strncmp(cmd, "echo -n", 7) && cmd[8] == '\0')
 	{
@@ -47,9 +51,9 @@ int	built_in(t_command *command, char **envp, char *cmd)
 	else if ((!ft_strncmp(cmd, "cd", 2) && (cmd[2] == ' ' || cmd[2] == '\0')))
 	{
 		if (cmd[2] == '\0')
-			return (ft_cd(NULL, envp, NULL), 1);
+			return (ft_cd(NULL, NULL), 1);
 		else
-			return (ft_cd(NULL, envp, cmd + 3), 1);
+			return (ft_cd(NULL, cmd + 3), 1);
 	}
 	return (0);
 }

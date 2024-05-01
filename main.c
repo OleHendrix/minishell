@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   main.c                                             :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/22 14:27:30 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/30 16:19:40 by ohendrix      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/22 14:27:30 by ohendrix          #+#    #+#             */
+/*   Updated: 2024/05/01 20:23:51 by olehendrix       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,10 @@
 
 void parse_input(char **envp, char *mode)
 {
-	char *line;
+	char 		*line;
+	t_command	command;
 
+	command.envp = ft_envdup(envp);
 	while (1)
 	{
 		line = readline("minishell: ");
@@ -28,8 +30,7 @@ void parse_input(char **envp, char *mode)
 			perror("Wrong syntax");
 			free(line);
 		}
-		else if (!built_in_perm(envp, line))
-			fill_struct(line, envp, mode);
+		fill_struct(line, &command, mode);
 	}
 	free(line);
 }

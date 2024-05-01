@@ -91,30 +91,27 @@ void	print_list(char **str)
 	// return (i);
 }
 
-void fill_struct(char *line, char **envp, char *mode)
+void fill_struct(char *line, t_command *command, char *mode)
 {
-	t_command	command;
-
-	(void)envp;
-	init_struct(&command);
-	ft_supersplit(line, ' ', &command);
-	// print_list(command.tokens);
-	if (!command.tokens)
+	init_struct(command);
+	if (built_in_perm(command, line))
+		return ;
+	ft_supersplit(line, ' ', command);
+	if (!command->tokens)
 		return (ft_putstr_fd("ERROR IN SPLIT", 2));
-	init_files(&command, command.tokens);
-	init_commands(&command, command.tokens);
-	// command.cmd_count = count_commands(&command.commands);
-	// // trim_quotes(&command.commands);
-	// if (mode && !ft_strncmp(mode, "test", 5))
-	// 	printstruct(&command);
-	// else
-	// {
-	// 	command.pid = fork();
-	// 	if (!command.pid)
-	// 		pipex(envp, &command);
-	// 	else
-	// 		waitpid(command.pid, NULL, 0);
-	// }
-	// ft_free_struct(&command);
+	init_files(command, command->tokens);
+	init_commands(command, command->tokens);
+	command->cmd_count = count_commands(&command->commands);
+	if (mode && !ft_strncmp(mode, "test", 5))
+		printstruct(command);
+	else
+	{
+		command->pid = fork();
+		if (!command->pid)
+			pipex(command->envp, command);
+		else
+			waitpid(command->pid, NULL, 0);
+	}
+	ft_free_struct(command);
 	free(line);
 }

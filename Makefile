@@ -17,6 +17,9 @@ $(EXE_DIR)/pipex.c \
 $(EXE_DIR)/pipe_utils.c \
 $(EXE_DIR)/built_in.c \
 $(BUILTIN_DIR)/echo.c \
+$(BUILTIN_DIR)/cd.c \
+$(BUILTIN_DIR)/export.c \
+$(BUILTIN_DIR)/unset.c \
 signals.c
 
 

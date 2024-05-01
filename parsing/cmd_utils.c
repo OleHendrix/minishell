@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   cmd_utils.c                                        :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/22 16:24:09 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/30 17:07:30 by ohendrix      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   cmd_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/22 16:24:09 by ohendrix          #+#    #+#             */
+/*   Updated: 2024/05/01 20:25:23 by olehendrix       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ char *ft_append(char *token, char *value, int i, int j)
 	}
 	if (value)
 		newtoken = ft_strjoin(newtoken, value);
-	newtoken = ft_strjoin(newtoken, token + (k + j + 1));
+	newtoken = ft_strjoin(newtoken, token + (i + j));
 	return (free(token), newtoken);
 }
 
@@ -76,7 +76,6 @@ void	ft_variable(t_command *command, int j)
 			command->tokens[j] = ft_expandvariable(command, command->tokens[j], i + 1);
 		i++;
 	}
-	printf("%s\n", command->tokens[j]);
 	command->inquotes = false;
 	// {
 	// 	t_list *newnode;

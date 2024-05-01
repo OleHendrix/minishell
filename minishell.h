@@ -30,6 +30,7 @@ typedef struct t_command
 	int		outfile_fd;
 	struct t_list	*commands;
 	struct t_list	*variables;
+	char	**envp;
 	bool	inquotes;
 	int		cmd_count;
 	int		cmd_tracker;
@@ -57,7 +58,7 @@ bool	check_quotes(char *line);
 bool	checksyntax(char *line);
 
 //cmd_utils.c
-void	init_struct(t_command *command);
+void 	init_struct(t_command *command);
 char	*ft_append(char *token, char *value, int i, int j);
 char 	*ft_expandvariable(t_command *command, char *token, int i);
 void	ft_variable(t_command *command, int j);
@@ -92,7 +93,7 @@ void	ft_set_files(t_command *command, char *str, int i);
 void	init_files(t_command *command, char **tokens);
 void	combine_empty_quote(t_command *command);
 int		count_commands(t_list **list);
-void	fill_struct(char *line, char **envp, char *mode);
+void	fill_struct(char *line, t_command *command, char *mode);
 void 	parse_input(char **envp, char *mode);
 
 //EXECUTION.
@@ -115,13 +116,24 @@ void	sig_handler(int sig, siginfo_t *info, void *context);
 void	init_signals();
 
 //built_in.c
-int		built_in_perm(char **envp, char *line);
-int		built_in(t_command *command, char **envp, char *cmd);
+int		built_in_perm(t_command *command, char *line);
+int		built_in(t_command *command, char *cmd);
 
 //BUILTINS
+//echo.c
 void	ft_echo(t_command *command, char *cmd);
-void	ft_cd(t_command *command, char **envp, char *cmd);
 
+//cd.c
+void	ft_cd(t_command *command, char *cmd);
+
+//export.c
+char	**ft_envadd(t_command *command, char **envp, char *cmd);
+char	**ft_envdup(char **envp);
+size_t	ft_getvar(char *cmd);
+void	ft_export(t_command *command, char *cmd);
+
+//unset.c
+void	ft_unset(t_command *command, char *cmd);
 
 
 
