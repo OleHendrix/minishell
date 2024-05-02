@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/22 14:27:30 by ohendrix          #+#    #+#             */
-/*   Updated: 2024/05/01 20:23:51 by olehendrix       ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   main.c                                             :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/04/22 14:27:30 by ohendrix      #+#    #+#                 */
+/*   Updated: 2024/05/02 10:43:35 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void parse_input(char **envp, char *mode)
 	char 		*line;
 	t_command	command;
 
-	command.envp = ft_envdup(envp);
+	command.envp = ft_envdup(envp); //protec, free
 	while (1)
 	{
 		line = readline("minishell: ");
