@@ -20,6 +20,7 @@ $(BUILTIN_DIR)/echo.c \
 $(BUILTIN_DIR)/cd.c \
 $(BUILTIN_DIR)/export.c \
 $(BUILTIN_DIR)/unset.c \
+$(BUILTIN_DIR)/env.c \
 signals.c
 
 

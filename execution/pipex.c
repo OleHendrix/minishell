@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/12 16:41:56 by ohendrix          #+#    #+#             */
-/*   Updated: 2024/05/01 20:15:23 by olehendrix       ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   pipex.c                                            :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
+/*   Updated: 2024/05/02 12:24:01 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ char	*ft_findpath(char *cmd, char **envp)
 	return (NULL);
 }
 
-void	ft_execute(char **envp, t_command *command)
+void	ft_execute(t_command *command)
 {
 	char	**cmd_split;
 	char	*path;
@@ -60,14 +60,15 @@ void	ft_execute(char **envp, t_command *command)
 		perror("ERROR IN SPLIT");
 		exit(1);
 	}
-	path = ft_findpath(cmd_split[0], envp);
+	path = ft_findpath(cmd_split[0], command->envp);
 	if (path == NULL)
 	{
 		ft_free(cmd_split);
 		perror("Command not found");
 		exit(127);
 	}
-	if (execve(path, cmd_split, envp) == -1)
+	// ft_env(command);
+	if (execve(path, cmd_split, command->envp) == -1)
 	{
 		ft_free(cmd_split);
 		free(path);
@@ -78,11 +79,11 @@ void	ft_execute(char **envp, t_command *command)
 	free(path);
 }
 
-void	ft_childproces(int fd[2], char **envp, t_command *command)
+void	ft_childproces(int fd[2], t_command *command)
 {
 	close(fd[0]);
 	dup2(fd[1], STDOUT_FILENO);
-	ft_execute(envp, command);
+	ft_execute(command);
 }
 
 void	config_files(t_command *command)
@@ -99,7 +100,7 @@ void	config_files(t_command *command)
 	}
 }
 
-void	pipex(char **envp, t_command *command)
+void	pipex(t_command *command)
 {
 	pid_t		pid;
 	int			*fd;
@@ -111,7 +112,7 @@ void	pipex(char **envp, t_command *command)
 		fd = create_pipe();
 		pid = ft_fork();
 		if (!pid)
-			ft_childproces(fd, envp, command);
+			ft_childproces(fd, command);
 		else
 		{
 			close(fd[1]);
@@ -121,5 +122,5 @@ void	pipex(char **envp, t_command *command)
 		command->cmd_tracker++;
 		free(fd);
 	}
-	ft_execute(envp, command);
+	ft_execute(command);
 }

@@ -62,6 +62,7 @@ void 	init_struct(t_command *command);
 char	*ft_append(char *token, char *value, int i, int j);
 char 	*ft_expandvariable(t_command *command, char *token, int i);
 void	ft_variable(t_command *command, int j);
+char 	*ft_strtrim2(char *str, char c);
 void	addcommand(t_command *command, int j);
 void	init_commands(t_command *command, char **tokens);
 
@@ -106,10 +107,10 @@ char	*ft_strjoin2(char *s1, char const *s2);
 
 //pipex
 char	*ft_findpath(char *cmd, char **envp);
-void	ft_execute(char **envp, t_command *command);
-void	ft_childproces(int fd[2], char **envp, t_command *command);
+void	ft_execute(t_command *command);
+void	ft_childproces(int fd[2], t_command *command);
 void	config_files(t_command *command);
-void	pipex(char **envp, t_command *command);
+void	pipex(t_command *command);
 
 //signals.c
 void	sig_handler(int sig, siginfo_t *info, void *context);
@@ -134,6 +135,11 @@ void	ft_export(t_command *command, char *cmd);
 
 //unset.c
 void	ft_unset(t_command *command, char *cmd);
+
+//env.c
+char	*get_value(t_command *command, int index);
+char	*ft_getenv(t_command *command, char *variable);
+void	ft_env(t_command *command);
 
 
 

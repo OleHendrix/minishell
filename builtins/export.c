@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   export.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/30 14:15:30 by ohendrix          #+#    #+#             */
-/*   Updated: 2024/05/01 20:07:36 by olehendrix       ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   export.c                                           :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/04/30 14:15:30 by ohendrix      #+#    #+#                 */
+/*   Updated: 2024/05/02 14:50:34 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ char **ft_envadd(t_command *command, char **envp, char *cmd)
 	return (free(envp), envp2);	
 }
 
-char **ft_envdup(char **envp)
+char	**ft_envdup(char **envp)
 {
 	char	**envp2;
 	int		count;
@@ -54,7 +54,7 @@ char **ft_envdup(char **envp)
 		i++;
 	}
 	envp2[count] = NULL;
-	return (envp2);	
+	return (envp2);
 }
 
 size_t	ft_getvar(char *cmd)

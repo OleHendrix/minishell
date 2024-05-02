@@ -32,7 +32,9 @@ void init_files(t_command *command, char **tokens)
 		}
 		if (!ft_strncmp(tokens[i], ">", 1) && ft_strncmp(tokens[i], ">>", 2) )
 			ft_set_files(command, &tokens[i][1], 1);
-		if (!ft_strncmp(tokens[i], ">", 2))
+		if (!ft_strncmp(tokens[i], ">>", 2) )
+			ft_set_files(command, &tokens[i][2], 1);
+		if (!ft_strncmp(tokens[i], ">", 2) || !ft_strncmp(tokens[i], ">>", 3))
 		{
 			ft_set_files(command, tokens[i + 1], 1);
 			i++;
@@ -88,7 +90,6 @@ void	print_list(char **str)
 		printf("%s\n", str[i]);
 		i ++;
 	}
-	// return (i);
 }
 
 void fill_struct(char *line, t_command *command, char *mode)
@@ -101,6 +102,7 @@ void fill_struct(char *line, t_command *command, char *mode)
 		return (ft_putstr_fd("ERROR IN SPLIT", 2));
 	init_files(command, command->tokens);
 	init_commands(command, command->tokens);
+	// trim_quotes(&command->commands);
 	command->cmd_count = count_commands(&command->commands);
 	if (mode && !ft_strncmp(mode, "test", 5))
 		printstruct(command);
@@ -108,7 +110,7 @@ void fill_struct(char *line, t_command *command, char *mode)
 	{
 		command->pid = fork();
 		if (!command->pid)
-			pipex(command->envp, command);
+			pipex(command);
 		else
 			waitpid(command->pid, NULL, 0);
 	}

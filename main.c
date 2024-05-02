@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 14:27:30 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/02 10:43:35 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/02 15:44:41 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void parse_input(char **envp, char *mode)
 	char 		*line;
 	t_command	command;
 
-	command.envp = ft_envdup(envp); //protec, free
+	command.envp = ft_envdup(envp);
 	while (1)
 	{
 		line = readline("minishell: ");
@@ -30,7 +30,8 @@ void parse_input(char **envp, char *mode)
 			perror("Wrong syntax");
 			free(line);
 		}
-		fill_struct(line, &command, mode);
+		else 
+			fill_struct(line, &command, mode);
 	}
 	free(line);
 }

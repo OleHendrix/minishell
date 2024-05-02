@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   cmd_utils.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/22 16:24:09 by ohendrix          #+#    #+#             */
-/*   Updated: 2024/05/01 20:25:23 by olehendrix       ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   cmd_utils.c                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/04/22 16:24:09 by ohendrix      #+#    #+#                 */
+/*   Updated: 2024/05/02 15:30:37 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,11 @@
 void init_struct(t_command *command)
 {
 	command->infile = NULL;
+	command->infile_fd = 0;
+	command->outfile = NULL;
+	command->outfile_fd = 0;
 	command->commands = NULL;
 	command->variables = NULL;
-	command->outfile = NULL;
 	command->here_doc = false;
 	command->delimiter = NULL;
 	command->cmd_count = 0;
@@ -31,7 +33,8 @@ char *ft_append(char *token, char *value, int i, int j)
 	char *newtoken;
 	int	k;
 	
-	newtoken = malloc(ft_strlen(token) - j + ft_strlen(value) + 1); //protec
+	newtoken = malloc(ft_strlen(token) - (j + 1) + ft_strlen(value) + 1); //protec
+	ft_bzero(newtoken, ft_strlen(token) - (j + 1) + ft_strlen(value) + 1);
 	k = 0;
 	while (k < (i - 1))
 	{
@@ -39,7 +42,12 @@ char *ft_append(char *token, char *value, int i, int j)
 		k++;
 	}
 	if (value)
+	{
+		// printf("%s\n", value);
 		newtoken = ft_strjoin(newtoken, value);
+		// printf("%s\n", newtoken);
+
+	}
 	newtoken = ft_strjoin(newtoken, token + (i + j));
 	return (free(token), newtoken);
 }
@@ -53,11 +61,14 @@ char *ft_expandvariable(t_command *command, char *token, int i)
 	j = 0;
 	while (token[i + j] != ' ' && token[i + j] != '$' && token[i + j] != '\0' && token[i + j] != '\"' && token[i + j] != '\'') 
 		j++;
+	if (j == 0)
+		return (token);
 	variable = malloc(sizeof(char) * (j + 1));
 	if (!variable)
 		ft_mallocfail(command, "FAIL");
 	ft_strlcpy(variable, token + i, j + 1);
-	value = getenv(variable);
+	value = ft_getenv(command, variable); //zelf maken 
+	// printf("%s\n", value);
 	free(variable);
 	return (ft_append(token, value, i, j));
 }
@@ -76,6 +87,7 @@ void	ft_variable(t_command *command, int j)
 			command->tokens[j] = ft_expandvariable(command, command->tokens[j], i + 1);
 		i++;
 	}
+	// printf("%s\n", command->tokens[j]);
 	command->inquotes = false;
 	// {
 	// 	t_list *newnode;
@@ -100,12 +112,34 @@ void	ft_variable(t_command *command, int j)
 	// }
 }
 
+char *ft_strtrim2(char *str, char c)
+{
+	int	i;
+	char *ret;
+
+	i = 1;
+	// printf("mee: %s str\n", str);
+	if (str[0] != c || str[ft_strlen(str) - 1] != c)
+	{
+		return (str);
+	}
+	ret = (char *)malloc (sizeof(char *) * ft_strlen(str) - 1);
+	while (i < ft_strlen(str) - 1)
+	{
+		ret[i - 1] = str[i];
+		i ++;
+	}
+	// printf("ret = %s\n", ret);
+	free(str);
+	return (ret);
+}
+
 void	addcommand(t_command *command, int j)
 {
 	t_list	*newnode;
 	t_list	*lastnode;
 
-	command->tokens[j] = ft_strtrim(command->tokens[j], "\""); //nieuwe strtim maken die alleen 1 aanhalingsteken trimt??
+	command->tokens[j] = ft_strtrim2(command->tokens[j], '\"'); //nieuwe strtim maken die alleen 1 aanhalingsteken trimt??
 	ft_variable(command, j);
 	if (!command->newcom)
 	{
@@ -136,7 +170,7 @@ void init_commands(t_command *command, char **tokens)
 	i = 0;
 	while (tokens[i] != NULL)
 	{
-		if ((!ft_strncmp(tokens[i], "<", 2) || !ft_strncmp(tokens[i], ">", 2)))
+		if ((!ft_strncmp(tokens[i], "<", 2) || !ft_strncmp(tokens[i], ">", 2) || !ft_strncmp(tokens[i], "<<", 3) || !ft_strncmp(tokens[i], ">>", 3)))
 			i++;
 		else if (!ft_strncmp(tokens[i], "|", 2))
 		{

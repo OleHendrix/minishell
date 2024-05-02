@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   checksyntax.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/24 14:18:39 by ohendrix          #+#    #+#             */
-/*   Updated: 2024/04/25 14:58:34 by olehendrix       ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   checksyntax.c                                      :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/04/24 14:18:39 by ohendrix      #+#    #+#                 */
+/*   Updated: 2024/05/02 15:11:36 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ bool check_chars(char *line, char c)
 	{
 		while (line[i] == ' ')
 			i ++;
-		if (line[i] == '<' || line[i] == '>' || line[i] == '\0')
+		if ((line[i] == '<' || line[i] == '>' || line[i] == '\0') && i > 1)
 			return (false);
 		if (c == '|')
 		{
