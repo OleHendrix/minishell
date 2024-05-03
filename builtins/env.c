@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/30 14:15:30 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/02 13:24:05 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/03 16:32:51 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,16 @@ char *get_value(t_command *command, int index)
 	return (command->envp[index] + i + 1);
 }
 
+int	get_index(t_command *command, int index)
+{
+	int		i;
+
+	i = 0;
+	while (command->envp[index][i] != '=')
+		i ++;
+	return (i);
+}
+
 char *ft_getenv(t_command *command, char *variable)
 {
 	int	i;
@@ -29,7 +39,7 @@ char *ft_getenv(t_command *command, char *variable)
 	i = 0;
 	while (command->envp[i])
 	{
-		if (!ft_strncmp(command->envp[i], variable, ft_strlen(variable)))
+		if (!ft_strncmp(command->envp[i], variable, get_index(command, i)))
 			return (get_value(command, i));
 		i++;
 	}

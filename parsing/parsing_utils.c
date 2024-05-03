@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:23:18 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/02 14:33:47 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/03 15:19:34 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,21 +50,22 @@ void	printstack(t_list **a)
 	}
 }
 
-void	trim_quotes(t_list **list)
-{
-	t_list	*begin;
+// void	trim_quotes(t_list **list)
+// {
+// 	t_list *begin;
+// 	int		i;
 
-	begin = *list;
-	if (*list == NULL)
-		return ;
-	while ((*list) != NULL)
-	{
-		if ((*list)->str[0] == '\"')
-			(*list)->str = ft_strtrim((*list)->str, "\"");
-		(*list) = (*list)->next;
-	}
-	*list = begin;
-}
+// 	begin = *list;
+// 	while (begin != NULL)
+// 	{
+// 		while (begin->str[i] != '\0')
+// 		{
+// 			if (begin->str[i] == '\"')
+// 				begin->str = trimdquote(begin->str, i);
+// 			i++;
+// 		}
+// 	}
+// }
 
 char	*ft_safe_strdup(char *str, t_command *command)
 {

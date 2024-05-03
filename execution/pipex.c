@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/02 12:24:01 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/03 15:19:17 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,46 @@ char	*ft_findpath(char *cmd, char **envp)
 	return (NULL);
 }
 
+char **trimcmd(char **cmd)
+{
+	int	i;
+
+	i = 0;
+	while (cmd[i])
+	{
+		if (cmd[i][0] == '\"' && cmd[i][ft_strlen(cmd[i]) - 1] == '\"')
+			cmd[i] = ft_strtrim(cmd[i], "\"");
+		else if (cmd[i][0] == '\'' && cmd[i][ft_strlen(cmd[i]) - 1] == '\'')
+			cmd[i] = ft_strtrim(cmd[i], "\'");
+		i++;
+	}
+	return (cmd);
+
+	// int	i;
+	// int	j;
+
+	// i = 1;
+	// j = 0;
+	// if (cmd[i] == NULL)
+	// {
+	// 	cmd[0] = ft_strtrim(cmd[0], "\'");
+	// 	return (cmd);
+	// }
+	// while (cmd[j])
+	// 	j++;
+	// if (cmd[1][0] == '\'' && cmd[j - 1][ft_strlen(cmd[j - 1]) - 1] == '\'')
+	// {
+	// 	cmd[1] = ft_strtrim(cmd[1], "\'");
+	// 	cmd[j - 1] = ft_strtrim(cmd[j - 1], "\'");
+	// }
+	// else if (cmd[1][0] == '\"' && cmd[j - 1][ft_strlen(cmd[j - 1]) - 1] == '\"')
+	// {
+	// 	cmd[1] = ft_strtrim(cmd[1], "\"");
+	// 	cmd[j - 1] = ft_strtrim(cmd[j - 1], "\"");
+	// }
+	// return (cmd);
+}
+
 void	ft_execute(t_command *command)
 {
 	char	**cmd_split;
@@ -54,7 +94,8 @@ void	ft_execute(t_command *command)
 	cmd = getcommand(command);
 	if (built_in(command, cmd) > 0)
 		return ;
-	cmd_split = ft_split(cmd, ' ');
+	cmd_split = ft_supersplit2(cmd, ' ');
+	cmd_split = trimcmd(cmd_split);
 	if (cmd_split == NULL)
 	{
 		perror("ERROR IN SPLIT");

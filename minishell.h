@@ -31,6 +31,7 @@ typedef struct t_command
 	struct t_list	*commands;
 	struct t_list	*variables;
 	char	**envp;
+	int		exitstatus;
 	bool	inquotes;
 	int		cmd_count;
 	int		cmd_tracker;
@@ -64,7 +65,7 @@ char 	*ft_expandvariable(t_command *command, char *token, int i);
 void	ft_variable(t_command *command, int j);
 char 	*ft_strtrim2(char *str, char c);
 void	addcommand(t_command *command, int j);
-void	init_commands(t_command *command, char **tokens);
+// void	init_commands(t_command *command, char **tokens);
 
 //exit_utils.c
 void	ft_mallocfail(t_command *command, char *str);
@@ -82,6 +83,7 @@ void	ft_fill(char *s, char **result, int k, int j);
 void	ft_suballoc(char *s, char c, char **result, t_split split);
 // char	**ft_supersplit(char *s, char c);
 void	ft_supersplit(char *s, char c, t_command *command);
+char	**ft_supersplit2(char *s, char c);
 
 //parsing_utils.c
 void	printstruct(t_command *command);
@@ -90,8 +92,9 @@ void	trim_quotes(t_list **list);
 char	*ft_safe_strdup(char *str, t_command *command);
 
 //parsing.c
-void	ft_set_files(t_command *command, char *str, int i);
+int		ft_set_files(t_command *command, char *str, int set);
 void	init_files(t_command *command, char **tokens);
+int		init_commands(t_command *command, char **tokens, int i);
 void	combine_empty_quote(t_command *command);
 int		count_commands(t_list **list);
 void	fill_struct(char *line, t_command *command, char *mode);

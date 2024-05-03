@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 14:27:30 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/02 15:44:41 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/03 16:05:52 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ void parse_input(char **envp, char *mode)
 	t_command	command;
 
 	command.envp = ft_envdup(envp);
+	command.exitstatus = -1;
 	while (1)
 	{
 		line = readline("minishell: ");
