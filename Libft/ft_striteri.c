@@ -6,7 +6,7 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/10/31 15:02:39 by ohendrix      #+#    #+#                 */
-/*   Updated: 2023/11/01 16:49:01 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/06 13:28:44 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,27 @@ void	ft_striteri(char *s, void (*f)(unsigned int, char*))
 		i++;
 	}
 }
+
+int	ft_stritr(char *str, char *skipped)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	while (str[i])
+	{
+		j = 0;
+		while(skipped[j])
+		{
+			if(str[i] == skipped[j])
+				return (i);
+			j ++;
+		}
+		i ++;
+	}
+	return (i);
+}
+
 
 // void modify_char(unsigned int i, char *c) 
 // {

@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/24 13:27:01 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/03 14:22:29 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/06 13:40:11 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,5 +107,5 @@ char	**ft_supersplit2(char *s, char c)
 	cmd = malloc(sizeof(char *) * (wordcount + 1));
 	cmd[wordcount] = NULL;
 	ft_suballoc(s, c, cmd, split);
-	return (cmd);
+	return (trimcmd(cmd));
 }

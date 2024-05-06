@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   pipe_utils.c                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/18 16:28:36 by ohendrix          #+#    #+#             */
-/*   Updated: 2024/04/25 16:34:41 by olehendrix       ###   ########.fr       */
+/*                                                        ::::::::            */
+/*   pipe_utils.c                                       :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/04/18 16:28:36 by ohendrix      #+#    #+#                 */
+/*   Updated: 2024/05/06 14:12:47 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void	ft_free(char **cmd)
 	free(cmd);
 }
 
-char	*ft_strjoin2(char *s1, char const *s2)
+char	*ft_strjoin2(t_command *command, char *s1, char const *s2)
 {
 	char	*string;
 	int		i;
@@ -79,7 +79,7 @@ char	*ft_strjoin2(char *s1, char const *s2)
 
 	string = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
 	if (!string)
-		return (NULL);
+		ft_mallocfail(command, "MALLOC FAILED IN STRJOIN2");
 	i = 0;
 	j = 0;
 	if (s1)

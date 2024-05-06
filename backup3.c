@@ -72,3 +72,31 @@ void init_commands(t_command *command, char **tokens)
 		i++;
 	}
 }
+
+
+// char *ft_expandvariable(t_command *command, char *token, int i, int token_index)
+// {
+// 	char *variable;
+// 	char *value;
+// 	int	j;
+
+// 	j = 0;
+// 	if (token[i] == '?')
+// 	{
+// 		j = 1;
+// 		value = ft_itoa(command->exitstatus);
+// 	}
+// 	else
+// 	{
+// 		while (token[i + j] != ' ' && token[i + j] != '$' && token[i + j] != '\0' && token[i + j] != '\"' && token[i + j] != '\'') 
+// 			j++;
+// 		if (j == 0)
+// 			return (token);
+// 		variable = ft_substr(token, i, j);
+// 		if (!variable)
+// 			ft_mallocfail(command, "FAIL");
+// 		value = ft_getenv(command, variable);
+// 		free(variable);
+// 	}
+// 	return (ft_append(token, value, i, j));
+// }

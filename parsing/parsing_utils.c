@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:23:18 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/03 15:19:34 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/06 16:35:52 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,6 @@ void printstruct(t_command *command)
 	{
 		printf("commands:\n");
 		printstack(&command->commands);
-	}
-	if (command->variables)
-	{
-		printf("variables:\n");
-		printstack(&command->variables);
 	}
 	if (command->cmd_count)
 		printf("cmd_count: %d\n", command->cmd_count);
@@ -78,4 +73,16 @@ char	*ft_safe_strdup(char *str, t_command *command)
 		ft_mallocfail(command, "MALLOC fAILED IN STRDUP");
 	ft_strlcpy(dup, str, len);
 	return (dup);
+}
+
+char	*ft_safe_strjoin(t_command *command, char *s1, char const *s2)
+{
+	char *str;
+	
+	str = ft_strjoin(s1, s2);
+	if (str == NULL)
+	{
+		ft_mallocfail(command, "MALLOC FAILED IN STRDUP");
+	}
+	return (str);
 }

@@ -18,25 +18,29 @@
 typedef struct t_list
 {
 	struct t_list	*next;
+	struct t_list	*infiles;
+	struct t_list	*outfiles;
 	char	*str;
 }	t_list;
 
 typedef struct t_command
 {
-	char	*infile;
+	char	*line;
 	char	**tokens;
+	struct t_list	*commands;
+	// struct t_list	*variables;
+	char	*delimiter;
+	char	**envp;
+	char	*value;
+	char	*infile;
 	int		infile_fd;
 	char 	*outfile;
 	int		outfile_fd;
-	struct t_list	*commands;
-	struct t_list	*variables;
-	char	**envp;
 	int		exitstatus;
 	bool	inquotes;
 	int		cmd_count;
 	int		cmd_tracker;
 	bool	here_doc;
-	char	*delimiter;
 	int		pipes;
 	bool	newcom;
 	int		fd[2];
@@ -60,8 +64,8 @@ bool	checksyntax(char *line);
 
 //cmd_utils.c
 void 	init_struct(t_command *command);
-char	*ft_append(char *token, char *value, int i, int j);
-char 	*ft_expandvariable(t_command *command, char *token, int i);
+char	*ft_append(t_command *command, int i, int j, int t_idx);
+char	*ft_expandvariable(t_command *command, int i, int t_idx);
 void	ft_variable(t_command *command, int j);
 char 	*ft_strtrim2(char *str, char c);
 void	addcommand(t_command *command, int j);
@@ -71,6 +75,8 @@ void	addcommand(t_command *command, int j);
 void	ft_mallocfail(t_command *command, char *str);
 void 	free_list(t_list *list);
 void 	free_ptr_ptr(char **array);
+void	ft_exit(t_command *command, char *str);
+char	**trimcmd(char **cmd);
 void	ft_free_struct(t_command *command);
 
 //flag_utils.c
@@ -90,6 +96,7 @@ void	printstruct(t_command *command);
 void	printstack(t_list **a);
 void	trim_quotes(t_list **list);
 char	*ft_safe_strdup(char *str, t_command *command);
+char	*ft_safe_strjoin(t_command *command, char *s1, char const *s2);
 
 //parsing.c
 int		ft_set_files(t_command *command, char *str, int set);
@@ -106,10 +113,10 @@ pid_t 	ft_fork(void);
 char	*getcommand(t_command *command);
 int		*create_pipe(void);
 void	ft_free(char **cmd);
-char	*ft_strjoin2(char *s1, char const *s2);
+char	*ft_strjoin2(t_command *command, char *s1, char const *s2);
 
 //pipex
-char	*ft_findpath(char *cmd, char **envp);
+char	*ft_findpath(t_command *command, char *cmd, char **envp);
 void	ft_execute(t_command *command);
 void	ft_childproces(int fd[2], t_command *command);
 void	config_files(t_command *command);

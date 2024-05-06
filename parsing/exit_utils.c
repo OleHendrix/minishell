@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:37:48 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/02 15:43:22 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/06 13:47:25 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,15 @@
 void ft_mallocfail(t_command *command, char *str)
 {
 	perror(str);
+	// if (command)
+	ft_free_struct(command);
+	exit(1);
+}
+
+void ft_exit(t_command *command, char *str)
+{
+	perror(str);
+	// if (command)
 	ft_free_struct(command);
 	exit(1);
 }
@@ -59,4 +68,6 @@ void	ft_free_struct(t_command *command)
 		free_ptr_ptr(command->tokens);
 	if (command->delimiter)
 		free(command->delimiter);
+	if (command->line)
+		free(command->line);
 }

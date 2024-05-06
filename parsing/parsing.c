@@ -6,7 +6,7 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/03 11:02:47 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/03 16:14:57 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/06 15:35:30 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,9 +92,7 @@ void combine_empty_quote(t_command *command)
 	{
 		if (!ft_strncmp(current->str, "\"", 2))
 		{
-			current->str = ft_strjoin(current->str, current->next->str);
-			if (!current->str)
-				ft_mallocfail(command, "ERROR IN combine_empty_qoute");
+			current->str = ft_safe_strjoin(command, current->str, current->next->str);
 			current->next = current->next->next;
 		}
 		else
@@ -117,31 +115,16 @@ int	count_commands(t_list **list)
 	return (i);
 }
 
-void	print_list(char **str)
-{
-	int		i;
 
-	i = 0;
-	while (str[i])
-	{
-		printf("%s\n", str[i]);
-		i ++;
-	}
-}
-
-void fill_struct(char *line, t_command *command, char *mode)
+void	fill_struct(char *line, t_command *command, char *mode)
 {
 	init_struct(command);
 	if (built_in_perm(command, line))
 		return ;
 	ft_supersplit(line, ' ', command);
-	// print_list(command->tokens);
-	// printf("\n\n");
 	if (!command->tokens)
 		return (ft_putstr_fd("ERROR IN SPLIT", 2));
 	init_files(command, command->tokens);
-	// init_commands(command, command->tokens);
-	// trim_quotes(&command->commands);
 	command->cmd_count = count_commands(&command->commands);
 	if (mode && !ft_strncmp(mode, "test", 5))
 		printstruct(command);
@@ -151,11 +134,20 @@ void fill_struct(char *line, t_command *command, char *mode)
 		if (!command->pid)
 			pipex(command);
 		else
-		{
-			wait(&command->exitstatus);
-			waitpid(command->pid, NULL, 0);
-		}
+			waitpid(command->pid, &command->exitstatus, 0);
+
 	}
 	ft_free_struct(command);
-	free(line);
 }
+
+// void	print_list(char **str)
+// {
+// 	int		i;
+
+// 	i = 0;
+// 	while (str[i])
+// 	{
+// 		printf("%s\n", str[i]);
+// 		i ++;
+// 	}
+// }

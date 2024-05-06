@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:24:09 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/03 16:45:30 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/06 16:36:15 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ void init_struct(t_command *command)
 	command->outfile = NULL;
 	command->outfile_fd = 0;
 	command->commands = NULL;
-	command->variables = NULL;
 	command->here_doc = false;
 	command->delimiter = NULL;
 	command->cmd_count = 0;
@@ -28,57 +27,52 @@ void init_struct(t_command *command)
 	command->newcom = false;
 }
 
-char *ft_append(char *token, char *value, int i, int j)
+char *ft_append(t_command *command, int i, int j, int t_idx)
 {
 	char *newtoken;
 	int	k;
-	
-	newtoken = malloc(ft_strlen(token) - (j + 1) + ft_strlen(value) + 1); //protec
-	ft_bzero(newtoken, ft_strlen(token) - (j + 1) + ft_strlen(value) + 1);
+
+	newtoken = ft_calloc(sizeof(char), ft_strlen(command->tokens[t_idx]) + ft_strlen(command->value) - j + 2);
+	if (newtoken == NULL)
+		ft_mallocfail(command, "MALLOC FAILED IN APPEND");
 	k = 0;
 	while (k < i - 1)
 	{
-		newtoken[k] = token[k];
+		newtoken[k] = command->tokens[t_idx][k];
 		k++;
 	}
-	if (value)
-	{
-		// printf("%s\n", value);
-		newtoken = ft_strjoin(newtoken, value);
-		// printf("%s\n", newtoken);
-	}
-	printf("%s\n", newtoken);
-	newtoken = ft_strjoin(newtoken, token + (i + j));		//gaat fout met echo fobofe $US (hij haalt eerste letter weg van vorige woord)
-	return (free(token), newtoken);
+	if (command->value)
+		newtoken = ft_safe_strjoin(command, newtoken, command->value);
+	newtoken = ft_safe_strjoin(command, newtoken, command->tokens[t_idx] + (i + j));
+	return (free(command->tokens[t_idx]), newtoken);
 }
 
-char *ft_expandvariable(t_command *command, char *token, int i)
+
+char *ft_expandvariable(t_command *command, int i, int t_idx)
 {
 	char *variable;
-	char *value;
 	int	j;
 
 	j = 0;
-	if (token[i] == '?')
+	if (command->tokens[t_idx][i] == '?')
 	{
 		j = 1;
-		value = ft_itoa(command->exitstatus);
+		command->value = ft_itoa(command->exitstatus);
 	}
 	else
 	{
-		while (token[i + j] != ' ' && token[i + j] != '$' && token[i + j] != '\0' && token[i + j] != '\"' && token[i + j] != '\'') 
-			j++;
+		j = ft_stritr(command->tokens[t_idx] +i + j, " $\'\"\0");
 		if (j == 0)
-			return (token);
-		variable = malloc(sizeof(char) * (j + 1));
+			return (command->tokens[t_idx]);
+		variable = ft_substr(command->tokens[t_idx], i, j);
 		if (!variable)
 			ft_mallocfail(command, "FAIL");
-		ft_strlcpy(variable, token + i, j + 1);
-		value = ft_getenv(command, variable); //zelf maken 
+		command->value = ft_getenv(command, variable);
 		free(variable);
 	}
-	return (ft_append(token, value, i, j));
+	return (ft_append(command, i, j, t_idx));
 }
+
 
 void	ft_variable(t_command *command, int j)
 {
@@ -91,7 +85,11 @@ void	ft_variable(t_command *command, int j)
 		if (command->tokens[j][i] == '\'')
 			command->inquotes = !command->inquotes;
 		if (command->tokens[j][i] == '$' && !command->inquotes)
-			command->tokens[j] = ft_expandvariable(command, command->tokens[j], i + 1);
+		{
+			command->tokens[j] = ft_expandvariable(command, i + 1, j);
+			if (command->tokens[j][0] == '\0')
+				break;
+		}
 		i++;
 	}
 	command->inquotes = false;
@@ -124,11 +122,8 @@ void	addcommand(t_command *command, int j)
 
 	command->tokens[j] = ft_strtrim2(command->tokens[j], '\"');
 	ft_variable(command, j);
-	if (!command->newcom)
-	{
-		ft_checkflags(command, j);
-		return ;
-	}
+	if (!command->newcom || command->tokens[j][0] == '\0')
+		return (ft_checkflags(command, j)) ;
 	newnode = malloc(sizeof(t_list));
 	if (!newnode)
 		ft_mallocfail(command, "MALLOC FAILED IN ADDCOMMAND");
@@ -144,6 +139,5 @@ void	addcommand(t_command *command, int j)
 		lastnode = lastnode->next;
 	lastnode->next = newnode;
 	command->newcom = false;
-	
 }
 

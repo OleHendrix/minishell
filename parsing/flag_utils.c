@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:27:04 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/04/30 11:46:42 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/06 14:18:50 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,9 @@
 void	ft_checkflags(t_command *command, int j)
 {
 	t_list	*lastnode;
-
+	
+	if (command->tokens[j][0] == '\0')
+		return ;
 	if (command->commands == NULL)
 	{
 		lastnode = malloc(sizeof(t_list));
