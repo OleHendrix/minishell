@@ -18,9 +18,11 @@
 typedef struct t_list
 {
 	struct t_list	*next;
-	struct t_list	*infiles;
-	struct t_list	*outfiles;
 	char	*str;
+	char	*infile;
+	char	*outfile;
+	int		infileindex;
+	int		outfileindex;
 }	t_list;
 
 typedef struct t_command
@@ -28,6 +30,8 @@ typedef struct t_command
 	char	*line;
 	char	**tokens;
 	struct t_list	*commands;
+	char 	**outfiles;
+	char	**infiles;
 	// struct t_list	*variables;
 	char	*delimiter;
 	char	**envp;
@@ -45,6 +49,8 @@ typedef struct t_command
 	bool	newcom;
 	int		fd[2];
 	pid_t	pid;
+	bool	infilereset;
+	bool	outfilereset;
 } t_command;
 
 typedef struct t_split
@@ -92,6 +98,7 @@ void	ft_supersplit(char *s, char c, t_command *command);
 char	**ft_supersplit2(char *s, char c);
 
 //parsing_utils.c
+void	printarray(char **list);
 void	printstruct(t_command *command);
 void	printstack(t_list **a);
 void	trim_quotes(t_list **list);

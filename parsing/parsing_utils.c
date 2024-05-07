@@ -6,11 +6,24 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:23:18 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/06 16:35:52 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/07 15:25:22 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	printarray(char **list)
+{
+	int	i;
+
+	i = 0;
+	while (list[i])
+	{
+		printf("%s\n", list[i]);
+		i++;
+	}
+	printf("\n");
+}
 
 void printstruct(t_command *command)
 {
@@ -18,8 +31,18 @@ void printstruct(t_command *command)
 		printf("pipe: %d\n", command->pipes);
 	if (command->infile)
 		printf("infile: %s\n", command->infile);
+	if (command->infiles[0] != NULL)
+	{
+		printf("infiles:\n");
+		printarray(command->infiles);
+	}
 	if (command->outfile)
 		printf("outfile: %s\n", command->outfile);
+	if (command->outfiles[0] != NULL)
+	{
+		printf("outfiles:\n");
+		printarray(command->outfiles);
+	}
 	if (command->here_doc)
 		printf("here doc: true\n");
 	if (command->delimiter)
@@ -41,6 +64,10 @@ void	printstack(t_list **a)
 	while (begin != NULL)
 	{
 		printf("%s\n", begin->str);
+		if (begin->infileindex > -1)
+			printf("infileindex: %d\n", begin->infileindex);
+		if (begin->outfileindex > -1)
+			printf("outfileindex: %d\n", begin->outfileindex);
 		begin = begin->next;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:24:09 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/06 16:36:15 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/07 16:56:11 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,16 @@
 void init_struct(t_command *command)
 {
 	command->infile = NULL;
+	command->infiles = malloc(1);
+	if (!command->infiles)
+		ft_mallocfail(command, "FAIL");
+	command->infiles[0] = NULL;
 	command->infile_fd = 0;
 	command->outfile = NULL;
+	command->outfiles = malloc(1);
+	if (!command->outfiles)
+		ft_mallocfail(command, "FAIL");
+	command->outfiles[0] = NULL;
 	command->outfile_fd = 0;
 	command->commands = NULL;
 	command->here_doc = false;
@@ -25,6 +33,8 @@ void init_struct(t_command *command)
 	command->cmd_tracker = 0;
 	command->pipes = 0;
 	command->newcom = false;
+	command->infilereset = false;
+	command->outfilereset = false;
 }
 
 char *ft_append(t_command *command, int i, int j, int t_idx)
@@ -72,7 +82,6 @@ char *ft_expandvariable(t_command *command, int i, int t_idx)
 	}
 	return (ft_append(command, i, j, t_idx));
 }
-
 
 void	ft_variable(t_command *command, int j)
 {
@@ -128,6 +137,8 @@ void	addcommand(t_command *command, int j)
 	if (!newnode)
 		ft_mallocfail(command, "MALLOC FAILED IN ADDCOMMAND");
 	newnode->str = ft_safe_strdup(command->tokens[j], command);
+	newnode->infileindex = -1;
+	newnode->outfileindex = -1;
 	newnode->next = NULL;
 	if (command->commands == NULL)
 	{
