@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 14:27:30 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/14 15:54:58 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/16 14:58:01 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,17 +21,22 @@ void parse_input(char **envp, char *mode)
 	while (1)
 	{
 		command.line = readline("minishell: ");
-		if (!ft_strncmp(command.line, "exit", 5))
-			break ;
-		add_history(command.line);
-		command.line = ft_strtrim(command.line, " ");
-		if (!checksyntax(command.line))
-		{
-			perror("Wrong syntax");
-			free(command.line);
-		}
-		else 
+		if (command.line[0] != '\0')
+		{		
+			if (!ft_strncmp(command.line, "exit", 5))
+				break ;
+			add_history(command.line);
+			command.line = ft_strtrim(command.line, " ");
+			// if (!checksyntax(command.line))
+			// {
+			// 	perror("Wrong syntax");
+			// 	free(command.line);
+			// }
+			// else 
 			fill_struct(command.line, &command, mode);
+		}
+		else
+			free(command.line);
 	}
 	free(command.line);
 }

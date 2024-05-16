@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   file_utils.c                                       :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/14 15:45:44 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/14 16:05:19 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/16 15:22:58 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,22 +42,26 @@ int ft_open(char **files, int mode)
 int config_infiles(t_command *command)
 {
 	t_list *current;
-	int i;
 	int fd;
 
 	current = command->commands;
-	i = 0;
 	if (ft_open(command->infiles, 0))
 		return (0);
+	command->save_std_in = dup(STDIN_FILENO);
+	if (command->save_std_in == -1)
+		ft_exit(command, "ERROR IN DUP");
 	while (current != NULL)
 	{
 		if (current->infileindex != -1)
 		{
-			current->infileindex = open(command->infiles[i], O_RDONLY, 0777);
+			current->infileindex = open(command->infiles[current->infileindex], O_RDONLY, 0777);
 			if (current->infileindex == -1)
 				return (0);
 			if (current == command->commands)
-				dup2(current->infileindex, STDIN_FILENO);
+			{
+				if (dup2(current->infileindex, STDIN_FILENO) == -1)
+					ft_exit(command, "ERROR IN DUP25");
+			}
 		}
 		current = current->next;
 	}
@@ -67,18 +71,17 @@ int config_infiles(t_command *command)
 int config_outfiles(t_command *command)
 {
 	t_list *current;
-	int i;
 	int fd;
 
 	current = command->commands;
-	i = 0;
+	command->save_std_out = dup(STDOUT_FILENO);
 	if (ft_open(command->outfiles, 1))
 		return (0);
 	while (current != NULL)
 	{
 		if (current->outfileindex != -1)
 		{
-			current->outfileindex = open(command->outfiles[i], O_WRONLY | O_CREAT | O_TRUNC, 0777);
+			current->outfileindex = open(command->outfiles[current->outfileindex], O_WRONLY | O_CREAT | O_TRUNC, 0777);
 			if (current->outfileindex == -1)
 				return (0);
 		}

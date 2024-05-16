@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/30 14:17:36 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/02 12:18:14 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/16 14:45:23 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,24 +43,24 @@ int built_in_perm(t_command *command, char *line)
 
 int built_in(t_command *command, char *cmd)
 {
-    if (!ft_strncmp(cmd, "echo -n", 7) && cmd[8] == '\0')
-    {
-        ft_echo(command, cmd + 7);
-        return (1);
-    }
-    else if ((!ft_strncmp(cmd, "cd", 2) && (cmd[2] == ' ' || cmd[2] == '\0')))
-    {
-        if (cmd[2] == '\0')
-            return (ft_cd(NULL, NULL), 1);
-        else
-            return (ft_cd(NULL, cmd + 3), 1);
-    }
-    else if (!ft_strncmp(cmd, "env", 4) && cmd[4] == '\0')
-    {
-        ft_env(command);
-        return (1);
-    }
-    return (0);
+	if (!ft_strncmp(cmd, "echo -n", 7) && cmd[8] == '\0')
+	{
+		ft_echo(command, cmd + 7);
+		return (1);
+	}
+	else if ((!ft_strncmp(cmd, "cd", 2) && (cmd[2] == ' ' || cmd[2] == '\0')))
+	{
+		if (cmd[2] == '\0')
+			return (ft_cd(NULL, NULL), 1);
+		else
+			return (ft_cd(NULL, cmd + 3), 1);
+	}
+	else if (!ft_strncmp(cmd, "env", 4) && cmd[4] == '\0')
+	{
+		ft_env(command);
+		return (1);
+	}
+	return (0);
 }
 
 

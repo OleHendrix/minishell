@@ -6,11 +6,29 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/14 15:54:07 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/14 16:05:08 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/16 12:49:18 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	ft_files_to_com2(t_command *command, t_list *current)
+{
+	int	i;
+
+	i = 0;
+	if (!command->outfilereset)
+	{
+		if (!command->outfiles[i])
+			current->outfileindex = -1;
+		else
+		{
+			while (command->outfiles[i] != NULL)
+				i++;
+			current->outfileindex = i - 1;
+		}
+	}
+}
 
 void ft_files_to_com(t_command *command)
 {
@@ -34,18 +52,7 @@ void ft_files_to_com(t_command *command)
 			current->infileindex = i - 1;
 		}
 	}
-	i = 0;
-	if (!command->outfilereset)
-	{
-		if (!command->outfiles[i])
-			current->outfileindex = -1;
-		else
-		{
-			while (command->outfiles[i] != NULL)
-				i++;
-			current->outfileindex = i - 1;
-		}
-	}
+	ft_files_to_com2(command, current);
 }
 
 void	addoutfile(t_command *command, char *str)

@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/14 16:40:10 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/16 15:32:12 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	ft_execute(t_command *command)
 	cmd = getcommand(command);
 	cmd = adjustquotes(cmd);
 	if (built_in(command, cmd) > 0)
-		return ;
+		exit(EXIT_SUCCESS);
 	cmd_split = ft_split(cmd, ' ');
 	if (cmd_split == NULL)
 		ft_mallocfail(command, "MALLOC FAILED IN SUPERSPLIT2");
@@ -70,25 +70,20 @@ void	ft_execute(t_command *command)
 void	ft_childproces(int fd[2], t_command *command)
 {
 	t_list	*current;
-	int		i;
 
-	current = command->commands;
-	i = 0;
-	while (i < command->cmd_tracker)
-	{
-		current = current->next;
-		i++;
-	}
+	current = getcommand_node(command);
 	if (current->outfileindex != -1)
 	{
 		close(fd[0]);
-		dup2(current->outfileindex, STDOUT_FILENO);	
+		if (dup2(current->outfileindex, STDOUT_FILENO) == -1)
+			ft_exit(command, "ERROR IN DUP24");	
 		close(fd[1]);
 	}
 	else if (command->cmd_tracker + 1 < command->cmd_count)
 	{
 		close(fd[0]);
-		dup2(fd[1], STDOUT_FILENO);
+		if (dup2(fd[1], STDOUT_FILENO) == -1)
+			ft_exit(command, "ERROR IN DUP23");
 		close(fd[1]);
 	}
 	else
@@ -96,31 +91,32 @@ void	ft_childproces(int fd[2], t_command *command)
 		close(fd[0]);
 		close(fd[1]);
 	}
+	close(command->save_std_in);
+	close(command->save_std_out);
 	ft_execute(command);
 }
 
 void	ft_configinput(int fd[2], t_command *command)
 {
 	t_list	*current;
-	int		i;
 
-	current = command->commands;
-	i = 0;
-	while (i < command->cmd_tracker + 1)
+	current = getcommand_node(command);
+	close(fd[1]);
+	if (!current->next)
 	{
-		current = current->next;
-		i++;
+		close(fd[0]);
+		return ;
 	}
-	if (current->infileindex != -1)
+	if (current->next->infileindex != -1)
 	{
-		close(fd[1]);
-		dup2(current->infileindex, STDIN_FILENO);
+		if (dup2(current->next->infileindex, STDIN_FILENO) == -1)
+			ft_exit(command, "ERROR IN DUP21");
 		close(fd[0]);
 	}
 	else
 	{
-		close(fd[1]);
-		dup2(fd[0], STDIN_FILENO);
+		if (dup2(fd[0], STDIN_FILENO) == -1)
+			ft_exit(command, "ERROR IN DUP22");
 		close(fd[0]);
 	}
 }
@@ -129,20 +125,16 @@ void	pipex(t_command *command)
 {
 	pid_t		pid;
 	int			*fd;
-	int			i;
 
 	pid = getpid();
-	i = 0;
 	if (!config_infiles(command))
 		return (perror("FILE ERROR(1)"));
 	if (!config_outfiles(command))
 		return (perror("FILE ERROR(0)"));
-	printf("before: cmdtracker: %d cmd_count: %d\n", command->cmd_tracker, command->cmd_count);
 	while (command->cmd_tracker < command->cmd_count && pid != 0)
 	{
-		fd = create_pipe();
+		fd = create_pipe(command);
 		pid = ft_fork(command);
-		command->pids[command->cmd_tracker] = pid;
 		if (!pid)
 			ft_childproces(fd, command);
 		else
@@ -150,11 +142,6 @@ void	pipex(t_command *command)
 		command->cmd_tracker ++;
 		free(fd);
 	}
-	printf("after: cmdtracker: %d cmd_count: %d\n", command->cmd_tracker, command->cmd_count);
-	while (i <= command->cmd_tracker)
-	{
-		waitpid(command->pids[i], NULL, 0);
-		i++;
-	}
-	exit(command->exitstatus);
+	ft_waitpids(command);
+	ft_restore_in_out(command);
 }

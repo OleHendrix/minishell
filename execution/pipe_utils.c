@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/18 16:28:36 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/14 16:20:07 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/16 12:54:42 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,19 @@
 
 pid_t ft_fork(t_command *command)
 {
-	pid_t	pid;
+	// pid_t	pid;
 
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("FORK FAILED");
-	}
-	return (pid);
-
-	// command->pids[command->cmd_tracker] = fork();
-	// if (command->pids[command->cmd_tracker] == -1)
+	// pid = fork();
+	// if (pid == -1)
 	// {
 	// 	perror("FORK FAILED");
 	// }
-	// return (command->pids[command->cmd_tracker]);
+	// return (pid);
+
+	command->pids[command->cmd_tracker] = fork();
+	if (command->pids[command->cmd_tracker] == -1)
+		ft_exit(command, "ERROR IN FORK");
+	return (command->pids[command->cmd_tracker]);
 }
 
 char *getcommand(t_command *command)
@@ -46,21 +44,15 @@ char *getcommand(t_command *command)
 	return (current->str);
 }
 
-int *create_pipe(void)
+int *create_pipe(t_command *command)
 {
 	int	*fd;
 
-	fd = malloc (2 * sizeof(int));
-	if (fd == NULL)
-	{
-		perror("MALLOC FAILED");
-		exit(1);
-	}
+	fd = malloc(2 * sizeof(int));
+	if (!fd)
+		ft_mallocfail(command, "ERROR IN PIPE MALLOC");
 	if (pipe(fd) == -1)
-	{
-		perror("PIPE FAILED");
-		free(fd);
-	}
+		ft_exit(command, "ERROR IN MAKING PIPE");
 	return (fd);
 }
 

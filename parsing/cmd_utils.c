@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:24:09 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/14 15:49:39 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/16 12:48:21 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,23 @@
 
 void init_struct(t_command *command)
 {
-	command->infiles = malloc(1);
+	command->infiles = malloc(sizeof (char *));
 	if (!command->infiles)
 		ft_mallocfail(command, "FAIL");
 	command->infiles[0] = NULL;
-	command->outfiles = malloc(1);
+	command->outfiles = malloc(sizeof (char *));
 	if (!command->outfiles)
 		ft_mallocfail(command, "FAIL");
 	command->outfiles[0] = NULL;
+	command->save_std_in = -1;
+	command->save_std_out = -1;
 	command->commands = NULL;
 	command->here_doc = false;
 	command->delimiter = NULL;
 	command->cmd_count = 0;
 	command->cmd_tracker = 0;
 	command->pipes = 0;
+	command->pids = NULL;
 	command->newcom = false;
 	command->infilereset = false;
 	command->outfilereset = false;

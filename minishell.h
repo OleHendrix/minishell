@@ -11,6 +11,9 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 
 # include "./Libft/libft.h"
 # include "./Libft/ft_printf/libftprintf.h"
@@ -31,6 +34,8 @@ typedef struct t_command
 	char 	**outfiles;
 	char	**infiles;
 	// struct t_list	*variables;
+	int		save_std_in;
+	int		save_std_out;
 	char	*delimiter;
 	char	**envp;
 	char	*value;
@@ -100,6 +105,7 @@ char	*ft_safe_strdup(char *str, t_command *command);
 char	*ft_safe_strjoin(t_command *command, char *s1, char const *s2);
 
 //parsing_files.c
+void	ft_files_to_com2(t_command *command, t_list *current);
 void	ft_files_to_com(t_command *command);
 void	addoutfile(t_command *command, char *str);
 void	addinfile(t_command *command, char *str);
@@ -117,7 +123,7 @@ void	fill_struct(char *line, t_command *command, char *mode);
 //pipe_utils.c
 pid_t 	ft_fork(t_command *command);
 char	*getcommand(t_command *command);
-int		*create_pipe(void);
+int		*create_pipe(t_command *command);
 void	ft_free(char **cmd);
 char	*ft_strjoin2(t_command *command, char *s1, char const *s2);
 
@@ -129,8 +135,12 @@ void	ft_configinput(int fd[2], t_command *command);
 void	pipex(t_command *command);
 
 //exec_utils.c
-char	*adjustquotes2(char *cmd, int delete, char c);
-char	*adjustquotes(char *cmd);
+char    *adjuctquotes3(char *cmd, int delete, char *quotes, char *cmd2);
+char    *adjustquotes2(char *cmd, int delete, char *quotes);
+char    *adjustquotes(char *cmd);
+void    ft_waitpids(t_command *command);
+void    ft_restore_in_out(t_command *command);
+t_list  *getcommand_node(t_command *command);
 
 //file_utils.c
 int		ft_open(char **files, int mode);
@@ -165,7 +175,5 @@ void	ft_unset(t_command *command, char *cmd);
 char	*get_value(t_command *command, int index);
 char	*ft_getenv(t_command *command, char *variable);
 void	ft_env(t_command *command);
-
-
 
 #endif

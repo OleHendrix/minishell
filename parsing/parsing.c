@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   parsing.c                                          :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/03 11:02:47 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/14 16:29:09 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/16 13:03:08 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,12 +96,6 @@ void	fill_struct(char *line, t_command *command, char *mode)
 	if (mode && !ft_strncmp(mode, "test", 5))
 		printstruct(command);
 	else
-	{
-		command->pid = fork();
-		if (!command->pid)
-			pipex(command);
-		else
-			waitpid(command->pid, &command->exitstatus, 0);
-	}
+		pipex(command);
 	ft_free_struct(command);
 }
