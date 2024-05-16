@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:24:09 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/07 16:56:11 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/14 15:49:39 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,14 @@
 
 void init_struct(t_command *command)
 {
-	command->infile = NULL;
 	command->infiles = malloc(1);
 	if (!command->infiles)
 		ft_mallocfail(command, "FAIL");
 	command->infiles[0] = NULL;
-	command->infile_fd = 0;
-	command->outfile = NULL;
 	command->outfiles = malloc(1);
 	if (!command->outfiles)
 		ft_mallocfail(command, "FAIL");
 	command->outfiles[0] = NULL;
-	command->outfile_fd = 0;
 	command->commands = NULL;
 	command->here_doc = false;
 	command->delimiter = NULL;
@@ -56,7 +52,6 @@ char *ft_append(t_command *command, int i, int j, int t_idx)
 	newtoken = ft_safe_strjoin(command, newtoken, command->tokens[t_idx] + (i + j));
 	return (free(command->tokens[t_idx]), newtoken);
 }
-
 
 char *ft_expandvariable(t_command *command, int i, int t_idx)
 {
@@ -104,32 +99,32 @@ void	ft_variable(t_command *command, int j)
 	command->inquotes = false;
 }
 
-char *ft_strtrim2(char *str, char c)
-{
-	size_t	i;
-	char *ret;
+// char *ft_strtrim2(char *str, char c, t_command *command)
+// {
+// 	size_t	i;
+// 	char *ret;
 
-	i = 1;
-	if (str[0] != c || str[ft_strlen(str) - 1] != c)
-	{
-		return (str);
-	}
-	ret = (char *)malloc (sizeof(char *) * ft_strlen(str) - 1);
-	while (i < ft_strlen(str) - 1)
-	{
-		ret[i - 1] = str[i];
-		i ++;
-	}
-	free(str);
-	return (ret);
-}
+// 	i = 1;
+// 	if (str[0] != c || str[ft_strlen(str) - 1] != c)
+// 		return (str);
+// 	ret = malloc(sizeof(char) * ft_strlen(str) - 1);
+// 	if (!ret)
+// 		ft_mallocfail(command, "kk");
+// 	while (i < ft_strlen(str) - 1)
+// 	{
+// 		ret[i - 1] = str[i];
+// 		i ++;
+// 	}
+// 	free(str);
+// 	return (ret);
+// }
 
 void	addcommand(t_command *command, int j)
 {
 	t_list	*newnode;
 	t_list	*lastnode;
 
-	command->tokens[j] = ft_strtrim2(command->tokens[j], '\"');
+	// command->tokens[j] = ft_strtrim2(command->tokens[j], '\"', command);
 	ft_variable(command, j);
 	if (!command->newcom || command->tokens[j][0] == '\0')
 		return (ft_checkflags(command, j)) ;

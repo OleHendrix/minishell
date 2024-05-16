@@ -8,6 +8,7 @@ SOURCES = \
 main.c \
 $(PARS_DIR)/parsing_utils.c \
 $(PARS_DIR)/cmd_utils.c \
+$(PARS_DIR)/parsing_files.c \
 $(PARS_DIR)/flag_utils.c \
 $(PARS_DIR)/exit_utils.c \
 $(PARS_DIR)/parsing.c \
@@ -16,13 +17,14 @@ $(PARS_DIR)/checksyntax.c \
 $(EXE_DIR)/pipex.c \
 $(EXE_DIR)/pipe_utils.c \
 $(EXE_DIR)/built_in.c \
+$(EXE_DIR)/exec_utils.c \
+$(EXE_DIR)/file_utils.c \
 $(BUILTIN_DIR)/echo.c \
 $(BUILTIN_DIR)/cd.c \
 $(BUILTIN_DIR)/export.c \
 $(BUILTIN_DIR)/unset.c \
 $(BUILTIN_DIR)/env.c \
 signals.c
-
 
 OBJS = $(SOURCES:.c=.o)
 

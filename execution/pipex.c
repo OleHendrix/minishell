@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/06 15:36:55 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/14 16:40:10 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,22 +38,6 @@ char	*ft_findpath(t_command *command, char *cmd, char **envp)
 	return (NULL);
 }
 
-char **trimcmd(char **cmd)
-{
-	int	i;
-
-	i = 0;
-	while (cmd[i])
-	{
-		if (cmd[i][0] == '\"' && cmd[i][ft_strlen(cmd[i]) - 1] == '\"')
-			cmd[i] = ft_strtrim(cmd[i], "\""); //protec + trim maar 1 quote 
-		else if (cmd[i][0] == '\'' && cmd[i][ft_strlen(cmd[i]) - 1] == '\'')
-			cmd[i] = ft_strtrim(cmd[i], "\'");
-		i++;
-	}
-	return (cmd);
-}
-
 void	ft_execute(t_command *command)
 {
 	char	**cmd_split;
@@ -61,9 +45,10 @@ void	ft_execute(t_command *command)
 	char 	*cmd;
 
 	cmd = getcommand(command);
+	cmd = adjustquotes(cmd);
 	if (built_in(command, cmd) > 0)
 		return ;
-	cmd_split = ft_supersplit2(cmd, ' ');
+	cmd_split = ft_split(cmd, ' ');
 	if (cmd_split == NULL)
 		ft_mallocfail(command, "MALLOC FAILED IN SUPERSPLIT2");
 	path = ft_findpath(command, cmd_split[0], command->envp);
@@ -84,23 +69,59 @@ void	ft_execute(t_command *command)
 
 void	ft_childproces(int fd[2], t_command *command)
 {
-	close(fd[0]);
-	dup2(fd[1], STDOUT_FILENO);
-	close(fd[1]);
+	t_list	*current;
+	int		i;
+
+	current = command->commands;
+	i = 0;
+	while (i < command->cmd_tracker)
+	{
+		current = current->next;
+		i++;
+	}
+	if (current->outfileindex != -1)
+	{
+		close(fd[0]);
+		dup2(current->outfileindex, STDOUT_FILENO);	
+		close(fd[1]);
+	}
+	else if (command->cmd_tracker + 1 < command->cmd_count)
+	{
+		close(fd[0]);
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[1]);
+	}
+	else
+	{
+		close(fd[0]);
+		close(fd[1]);
+	}
 	ft_execute(command);
 }
 
-void	config_files(t_command *command)
+void	ft_configinput(int fd[2], t_command *command)
 {
-	if (command->infile)
+	t_list	*current;
+	int		i;
+
+	current = command->commands;
+	i = 0;
+	while (i < command->cmd_tracker + 1)
 	{
-		command->infile_fd = open(command->infile, O_RDONLY, 0777);
-		dup2(command->infile_fd, STDIN_FILENO); //protec
+		current = current->next;
+		i++;
 	}
-	if (command->outfile)
+	if (current->infileindex != -1)
 	{
-		command->outfile_fd = open(command->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-		dup2(command->outfile_fd, STDOUT_FILENO); //protec
+		close(fd[1]);
+		dup2(current->infileindex, STDIN_FILENO);
+		close(fd[0]);
+	}
+	else
+	{
+		close(fd[1]);
+		dup2(fd[0], STDIN_FILENO);
+		close(fd[0]);
 	}
 }
 
@@ -108,33 +129,32 @@ void	pipex(t_command *command)
 {
 	pid_t		pid;
 	int			*fd;
+	int			i;
 
 	pid = getpid();
-	config_files(command);
-	while (command->cmd_tracker < command->cmd_count - 1 && pid != 0)
+	i = 0;
+	if (!config_infiles(command))
+		return (perror("FILE ERROR(1)"));
+	if (!config_outfiles(command))
+		return (perror("FILE ERROR(0)"));
+	printf("before: cmdtracker: %d cmd_count: %d\n", command->cmd_tracker, command->cmd_count);
+	while (command->cmd_tracker < command->cmd_count && pid != 0)
 	{
 		fd = create_pipe();
-		pid = ft_fork();
+		pid = ft_fork(command);
+		command->pids[command->cmd_tracker] = pid;
 		if (!pid)
 			ft_childproces(fd, command);
 		else
-		{
-			close(fd[1]);
-			dup2(fd[0], STDIN_FILENO);
-			close(fd[0]);
-		}
-		command->cmd_tracker++;
+			ft_configinput(fd, command);
+		command->cmd_tracker ++;
 		free(fd);
 	}
-	pid = ft_fork();
-	if (!pid)
+	printf("after: cmdtracker: %d cmd_count: %d\n", command->cmd_tracker, command->cmd_count);
+	while (i <= command->cmd_tracker)
 	{
-		ft_execute(command);
-		exit(EXIT_SUCCESS);
+		waitpid(command->pids[i], NULL, 0);
+		i++;
 	}
-	close(STDIN_FILENO);
-	waitpid(pid, &command->exitstatus, 0);
-	while (wait(NULL) != -1)
-		;
 	exit(command->exitstatus);
 }

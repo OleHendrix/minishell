@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/24 13:27:01 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/06 13:40:11 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/14 15:50:19 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ int	ft_countwords(char *s, char c)
 			i++;
 		}
 	}
-	// printf("wordcount %d\n", j);
 	return (j);
 }
 
@@ -81,7 +80,6 @@ void	ft_suballoc(char *s, char c, char **result, t_split split)
 		}
 		ft_fill(s + (split.i - split.k), result, split.k, split.j);
 	}
-	// printf("s: %s, i: %d, k: %d, j: %d\n", s, split.i, split.k, split.j);
 }
 
 void	ft_supersplit(char *s, char c, t_command *command)
@@ -96,16 +94,17 @@ void	ft_supersplit(char *s, char c, t_command *command)
 	ft_suballoc(s, c, command->tokens, split);
 }
 
-char	**ft_supersplit2(char *s, char c)
-{
-	t_split	split;
-	char 	**cmd;
-	int		wordcount;
+// char	**ft_supersplit2(char *s, char c)
+// {
+// 	t_split	split;
+// 	char 	**cmd;
+// 	int		wordcount;
 
-	split = (t_split){0, 0, 0, false, false};
-	wordcount = ft_countwords(s, c);
-	cmd = malloc(sizeof(char *) * (wordcount + 1));
-	cmd[wordcount] = NULL;
-	ft_suballoc(s, c, cmd, split);
-	return (trimcmd(cmd));
-}
+// 	split = (t_split){0, 0, 0, false, false};
+// 	wordcount = ft_countwords(s, c);
+// 	cmd = malloc(sizeof(char *) * (wordcount + 1));
+// 	cmd[wordcount] = NULL;
+// 	ft_suballoc(s, c, cmd, split);
+// 	// printarray(cmd);
+// 	return (trimcmd(cmd));
+// }

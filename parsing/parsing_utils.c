@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:23:18 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/07 15:25:22 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/14 16:00:21 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,11 @@ void printstruct(t_command *command)
 {
 	if (command->pipes)
 		printf("pipe: %d\n", command->pipes);
-	if (command->infile)
-		printf("infile: %s\n", command->infile);
 	if (command->infiles[0] != NULL)
 	{
 		printf("infiles:\n");
 		printarray(command->infiles);
 	}
-	if (command->outfile)
-		printf("outfile: %s\n", command->outfile);
 	if (command->outfiles[0] != NULL)
 	{
 		printf("outfiles:\n");

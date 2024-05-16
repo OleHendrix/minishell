@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/24 14:18:39 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/02 15:11:36 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/14 15:58:31 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,4 @@ bool	checksyntax(char *line)
 
 	valid = check_quotes(line);
 	return (valid);
-	// if (valid == true)
-	// 	printf("OK\n");
-	// if (valid == false)
-	// 	printf("NIET OK\n");
 }
-
-//  < infile "a" "a" kdjkfj """ > outile

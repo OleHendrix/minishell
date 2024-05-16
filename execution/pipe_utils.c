@@ -6,13 +6,13 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/18 16:28:36 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/06 14:12:47 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/14 16:20:07 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-pid_t ft_fork(void)
+pid_t ft_fork(t_command *command)
 {
 	pid_t	pid;
 
@@ -21,8 +21,14 @@ pid_t ft_fork(void)
 	{
 		perror("FORK FAILED");
 	}
-	// printf("in fork pid: %d\n", pid);
 	return (pid);
+
+	// command->pids[command->cmd_tracker] = fork();
+	// if (command->pids[command->cmd_tracker] == -1)
+	// {
+	// 	perror("FORK FAILED");
+	// }
+	// return (command->pids[command->cmd_tracker]);
 }
 
 char *getcommand(t_command *command)
