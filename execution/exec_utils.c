@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/14 15:47:21 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/16 15:23:14 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/21 12:34:04 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,11 +126,17 @@ void	ft_waitpids(t_command *command)
 	int	i;
 
 	i = 0;
+	
 	while (i < command->cmd_tracker)
 	{
-		waitpid(command->pids[i], &command->exitstatus, 0);
+		if(command->pids[i])
+			waitpid(command->pids[i], &command->exitstatus, 0);
+		// printf("%d, %d\n", i, command->cmd_tracker);
 		i++;
 	}
+	// printf(":)\n");
+	// waitpid(command->pids[0], NULL, 0);
+	// perror("pfnif\n");
 }
 
 void	ft_restore_in_out(t_command *command)

@@ -24,6 +24,10 @@ typedef struct t_list
 	char	*str;
 	int		infileindex;
 	int		outfileindex;
+	int		infile_fd;
+	int		outfile_fd;
+	bool	filesset;
+	char	*cmd_delimiter; //free
 }	t_list;
 
 typedef struct t_command
@@ -33,6 +37,8 @@ typedef struct t_command
 	struct t_list	*commands;
 	char 	**outfiles;
 	char	**infiles;
+	int		infiletracker;
+	int		outfiletracker;
 	// struct t_list	*variables;
 	int		save_std_in;
 	int		save_std_out;
@@ -144,7 +150,7 @@ t_list  *getcommand_node(t_command *command);
 
 //file_utils.c
 int		ft_open(char **files, int mode);
-int		config_infiles(t_command *command);
+int		config_infiles(t_command *command, bool next_cmd);
 int		config_outfiles(t_command *command);
 
 //signals.c

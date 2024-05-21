@@ -6,7 +6,7 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/10/31 15:03:09 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/02 12:07:23 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/21 16:43:31 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ char	*ft_strjoin(char *s1, char const *s2)
 		j++;
 	}
 	string[i + j] = '\0';
-	free(s1);
+	if (s1)
+		free(s1);
 	return (string);
 }
 

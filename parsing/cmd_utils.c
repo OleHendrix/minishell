@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:24:09 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/16 12:48:21 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/21 16:16:32 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ void init_struct(t_command *command)
 	if (!command->infiles)
 		ft_mallocfail(command, "FAIL");
 	command->infiles[0] = NULL;
+	command->infiletracker = 0;
+	command->outfiletracker = 0;
 	command->outfiles = malloc(sizeof (char *));
 	if (!command->outfiles)
 		ft_mallocfail(command, "FAIL");
@@ -134,10 +136,15 @@ void	addcommand(t_command *command, int j)
 	newnode = malloc(sizeof(t_list));
 	if (!newnode)
 		ft_mallocfail(command, "MALLOC FAILED IN ADDCOMMAND");
+	command->cmd_count ++;
 	newnode->str = ft_safe_strdup(command->tokens[j], command);
 	newnode->infileindex = -1;
 	newnode->outfileindex = -1;
+	newnode->infile_fd = -1;
+	newnode->outfile_fd = -1;
+	newnode->cmd_delimiter = NULL;
 	newnode->next = NULL;
+	newnode->filesset = false;
 	if (command->commands == NULL)
 	{
 		command->commands = newnode;

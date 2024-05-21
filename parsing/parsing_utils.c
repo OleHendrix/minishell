@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:23:18 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/14 16:00:21 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/21 16:17:13 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,10 @@ void printstruct(t_command *command)
 		printf("outfiles:\n");
 		printarray(command->outfiles);
 	}
-	if (command->here_doc)
-		printf("here doc: true\n");
-	if (command->delimiter)
-		printf("delimiter: %s\n", command->delimiter);
+	// if (command->here_doc)
+	// 	printf("here doc: true\n");
+	// if (command->delimiter)
+	// 	printf("delimiter: %s\n", command->delimiter);
 	if (command->commands)
 	{
 		printf("commands:\n");
@@ -64,6 +64,8 @@ void	printstack(t_list **a)
 			printf("infileindex: %d\n", begin->infileindex);
 		if (begin->outfileindex > -1)
 			printf("outfileindex: %d\n", begin->outfileindex);
+		if (begin->cmd_delimiter)
+			printf("del: %s\n", begin->cmd_delimiter);
 		begin = begin->next;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/16 15:32:12 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/21 15:00:11 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ void	ft_execute(t_command *command)
 	char 	*cmd;
 
 	cmd = getcommand(command);
+	// ft_putstr_fd(cmd, 2);
+	// ft_putchar_fd('\n', 2);
 	cmd = adjustquotes(cmd);
 	if (built_in(command, cmd) > 0)
 		exit(EXIT_SUCCESS);
@@ -69,21 +71,18 @@ void	ft_execute(t_command *command)
 
 void	ft_childproces(int fd[2], t_command *command)
 {
-	t_list	*current;
-
-	current = getcommand_node(command);
-	if (current->outfileindex != -1)
-	{
-		close(fd[0]);
-		if (dup2(current->outfileindex, STDOUT_FILENO) == -1)
-			ft_exit(command, "ERROR IN DUP24");	
-		close(fd[1]);
-	}
-	else if (command->cmd_tracker + 1 < command->cmd_count)
+	if (config_outfiles(command) != 2 && command->cmd_tracker + 1 < command->cmd_count)
 	{
 		close(fd[0]);
 		if (dup2(fd[1], STDOUT_FILENO) == -1)
-			ft_exit(command, "ERROR IN DUP23");
+			ft_exit(command, "ERROR IN DUP2");
+		close(fd[1]);
+	}
+	else if (command->cmd_tracker < command->pipes)
+	{
+		close(fd[0]);
+		if (dup2(fd[1], STDOUT_FILENO) == -1)
+			ft_exit(command, "ERROR IN DUP2");
 		close(fd[1]);
 	}
 	else
@@ -100,25 +99,13 @@ void	ft_configinput(int fd[2], t_command *command)
 {
 	t_list	*current;
 
-	current = getcommand_node(command);
-	close(fd[1]);
-	if (!current->next)
-	{
-		close(fd[0]);
-		return ;
-	}
-	if (current->next->infileindex != -1)
-	{
-		if (dup2(current->next->infileindex, STDIN_FILENO) == -1)
-			ft_exit(command, "ERROR IN DUP21");
-		close(fd[0]);
-	}
-	else
+	if (config_infiles(command, true) != 2 && command->cmd_tracker + 1 < command->cmd_count)
 	{
 		if (dup2(fd[0], STDIN_FILENO) == -1)
-			ft_exit(command, "ERROR IN DUP22");
-		close(fd[0]);
+			ft_exit(command, "ERROR IN DUP2");
 	}
+	close(fd[0]);
+	close(fd[1]);
 }
 
 void	pipex(t_command *command)
@@ -127,11 +114,14 @@ void	pipex(t_command *command)
 	int			*fd;
 
 	pid = getpid();
-	if (!config_infiles(command))
-		return (perror("FILE ERROR(1)"));
-	if (!config_outfiles(command))
-		return (perror("FILE ERROR(0)"));
-	while (command->cmd_tracker < command->cmd_count && pid != 0)
+	command->save_std_in = dup(STDIN_FILENO);
+	command->save_std_out = dup(STDOUT_FILENO);
+	while (!config_infiles(command, false) && command->cmd_tracker < command->cmd_count)
+		command->cmd_tracker ++;
+	// printf("%d count %d\n", command->cmd_tracker, command->cmd_count);
+	// config_infiles(command);
+	// config_outfiles(command);
+	while (command->cmd_tracker < command->cmd_count)
 	{
 		fd = create_pipe(command);
 		pid = ft_fork(command);

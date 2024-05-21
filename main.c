@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 14:27:30 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/16 14:58:01 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/21 13:31:22 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void parse_input(char **envp, char *mode)
 
 int main(int argc, char **argv, char **envp)
 {
-	// init_signals();
+	init_signals();
 	if (!envp || argc < 1)
 		return (1);
 	parse_input(envp, argv[1]);

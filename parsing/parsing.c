@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/03 11:02:47 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/16 13:03:08 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/21 14:14:01 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ int	init_commands(t_command *command, char **tokens, int i)
 {
 	if (!ft_strncmp(tokens[i], "|", 2))
 	{
-		command->pipes++;
 		command->newcom = true;
 		ft_files_to_com(command);
+		command->pipes++;
 		command->infilereset = true;
 		command->outfilereset = true;
 	}
@@ -37,26 +37,6 @@ int	init_commands(t_command *command, char **tokens, int i)
 		addcommand(command, i);
 	return (i + 1);
 }
-
-// void combine_empty_quote(t_command *command)
-// {
-// 	t_list *current;
-
-// 	current = command->commands;
-
-// 	if (current == NULL)
-// 		return ;
-// 	while (current->next != NULL)
-// 	{
-// 		if (!ft_strncmp(current->str, "\"", 2))
-// 		{
-// 			current->str = ft_safe_strjoin(command, current->str, current->next->str);
-// 			current->next = current->next->next;
-// 		}
-// 		else
-// 			current = current->next;
-// 	}
-// }
 
 int	count_commands(t_list **list)
 {
@@ -79,7 +59,7 @@ void	initpids(t_command *command)
 		return;
 	command->pids = malloc(command->cmd_count * sizeof(pid_t));
 	if (!command->pids)
-		ft_mallocfail(command, "kk");
+		ft_mallocfail(command, "MALLOC FAILED");
 }
 
 void	fill_struct(char *line, t_command *command, char *mode)
@@ -91,7 +71,7 @@ void	fill_struct(char *line, t_command *command, char *mode)
 	if (!command->tokens)
 		return (ft_putstr_fd("ERROR IN SPLIT", 2));
 	init_files(command, command->tokens);
-	command->cmd_count = count_commands(&command->commands);
+	// command->cmd_count = count_commands(&command->commands);
 	initpids(command);
 	if (mode && !ft_strncmp(mode, "test", 5))
 		printstruct(command);

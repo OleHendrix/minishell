@@ -33,7 +33,10 @@ ft_strrchr.c \
 ft_strtrim.c \
 ft_substr.c \
 ft_tolower.c \
-ft_toupper.c
+ft_toupper.c \
+get_next_line_utils.c \
+get_next_line.c
+
 OBJS = $(SOURCES:.c=.o)
 
 CFLAGS = -Wall -Werror -Wextra

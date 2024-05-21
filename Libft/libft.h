@@ -6,7 +6,7 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/10/27 16:38:12 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/06 13:29:05 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/21 16:26:26 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 # include <ctype.h>
 # include <string.h>
 # include "libft.h"
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 50
 
 int		ft_atoi(const char *nptr);
 void	ft_bzero(void *s, size_t n);
@@ -55,5 +57,13 @@ char	*ft_strtrim(char *s1, char const *set);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 int		ft_tolower(int c);
 int		ft_toupper(int c);
+char	*get_next_line(int fd);
+char	*freeremainder(char *remainder, char *buffer);
+char	*ft_fillremainder(char *remainder);
+int		checkbuffer(char *buffer);
+char	*ft_fillline(char *remainder);
+char	*ft_cutremainder(char *remainder);
 
+
+#endif
 #endif

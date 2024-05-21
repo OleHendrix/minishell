@@ -6,7 +6,7 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/14 15:54:07 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/16 12:49:18 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/21 16:13:33 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ void	ft_files_to_com2(t_command *command, t_list *current)
 			current->outfileindex = i - 1;
 		}
 	}
+	current->filesset = true;
 }
 
 void ft_files_to_com(t_command *command)
@@ -36,11 +37,19 @@ void ft_files_to_com(t_command *command)
 	int		i;
 
 	current = command->commands;
-	if (!current)
+	if (!current)// && command->pipes > 0)) //|| command->pipes >= command->cmd_count)
 		return;
 	i = 0;
 	while (current->next != NULL)
 		current = current->next;
+	if (current->filesset)
+		return;
+	if (command->here_doc)
+	{
+		current->cmd_delimiter = ft_safe_strdup(command->delimiter, command);
+		command->here_doc = false;
+		free(command->delimiter);
+	}
 	if (!command->infilereset)
 	{
 		if (!command->infiles[i])
@@ -116,19 +125,6 @@ int	ft_set_files(t_command *command, char *str, int set)
 		command->outfilereset = false;
 	}
 	return (1);
-	// if (set == 0)
-	// {
-	// 	if (command->infile)
-	// 		free(command->infile);
-	// 	command->infile = ft_safe_strdup(str, command);
-	// }
-	// if (set == 1)
-	// {
-	// 	if (command->outfile)
-	// 		free(command->outfile);
-	// 	command->outfile = ft_safe_strdup(str, command);
-	// }
-	// return (1);
 }
 
 void init_files(t_command *command, char **tok)
