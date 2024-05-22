@@ -6,27 +6,11 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:27:04 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/21 16:16:47 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/22 12:58:34 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-// int ft_flags(char **tokens, int j)
-// {
-// 	if (tokens[j + 1] == NULL)
-// 		return (1);
-// 	if (tokens[j + 1] == NULL)
-// 	{
-// 		tokens[j] = ft_strtrim(tokens[j], "\"");
-// 		return (1);
-// 	}
-// 	if (!ft_strncmp(tokens[j + 1], "|", 2))
-// 		return (1);
-// 	if (!ft_strncmp(tokens[j + 1], ">", 2))
-// 		return (1);
-// 	return (0);
-// }
 
 void	ft_checkflags(t_command *command, int j)
 {

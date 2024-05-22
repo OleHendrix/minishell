@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:24:09 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/21 16:16:32 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/22 15:05:55 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ void init_struct(t_command *command)
 	command->outfiles = malloc(sizeof (char *));
 	if (!command->outfiles)
 		ft_mallocfail(command, "FAIL");
+	command->outfappend = malloc(sizeof (int));
+	if (!command->outfappend)
+		ft_mallocfail(command, "FAIL");
+	command->outfappend[0] = -1;
 	command->outfiles[0] = NULL;
 	command->save_std_in = -1;
 	command->save_std_out = -1;
@@ -104,32 +108,11 @@ void	ft_variable(t_command *command, int j)
 	command->inquotes = false;
 }
 
-// char *ft_strtrim2(char *str, char c, t_command *command)
-// {
-// 	size_t	i;
-// 	char *ret;
-
-// 	i = 1;
-// 	if (str[0] != c || str[ft_strlen(str) - 1] != c)
-// 		return (str);
-// 	ret = malloc(sizeof(char) * ft_strlen(str) - 1);
-// 	if (!ret)
-// 		ft_mallocfail(command, "kk");
-// 	while (i < ft_strlen(str) - 1)
-// 	{
-// 		ret[i - 1] = str[i];
-// 		i ++;
-// 	}
-// 	free(str);
-// 	return (ret);
-// }
-
 void	addcommand(t_command *command, int j)
 {
 	t_list	*newnode;
 	t_list	*lastnode;
 
-	// command->tokens[j] = ft_strtrim2(command->tokens[j], '\"', command);
 	ft_variable(command, j);
 	if (!command->newcom || command->tokens[j][0] == '\0')
 		return (ft_checkflags(command, j)) ;

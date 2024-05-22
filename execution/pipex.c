@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/21 15:00:11 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/22 16:34:27 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,11 @@ void	ft_execute(t_command *command)
 {
 	char	**cmd_split;
 	char	*path;
-	char 	*cmd;
+	char	*cmd;
 
 	cmd = getcommand(command);
-	// ft_putstr_fd(cmd, 2);
-	// ft_putchar_fd('\n', 2);
+	if (!cmd)
+		return ;
 	cmd = adjustquotes(cmd);
 	if (built_in(command, cmd) > 0)
 		exit(EXIT_SUCCESS);
@@ -78,7 +78,7 @@ void	ft_childproces(int fd[2], t_command *command)
 			ft_exit(command, "ERROR IN DUP2");
 		close(fd[1]);
 	}
-	else if (command->cmd_tracker < command->pipes)
+	else if (command->cmd_tracker < command->cmd_count - 1)
 	{
 		close(fd[0]);
 		if (dup2(fd[1], STDOUT_FILENO) == -1)
@@ -97,8 +97,7 @@ void	ft_childproces(int fd[2], t_command *command)
 
 void	ft_configinput(int fd[2], t_command *command)
 {
-	t_list	*current;
-
+	// printf("%d,\n", command->infiletracker);
 	if (config_infiles(command, true) != 2 && command->cmd_tracker + 1 < command->cmd_count)
 	{
 		if (dup2(fd[0], STDIN_FILENO) == -1)
@@ -118,9 +117,6 @@ void	pipex(t_command *command)
 	command->save_std_out = dup(STDOUT_FILENO);
 	while (!config_infiles(command, false) && command->cmd_tracker < command->cmd_count)
 		command->cmd_tracker ++;
-	// printf("%d count %d\n", command->cmd_tracker, command->cmd_count);
-	// config_infiles(command);
-	// config_outfiles(command);
 	while (command->cmd_tracker < command->cmd_count)
 	{
 		fd = create_pipe(command);

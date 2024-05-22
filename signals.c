@@ -6,7 +6,7 @@
 /*   By: jdijkman <jdijkman@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/30 10:59:39 by jdijkman      #+#    #+#                 */
-/*   Updated: 2024/05/21 13:32:14 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/22 15:15:34 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ void	sig_handler(int sig, siginfo_t *info, void *context)
 	switch (sig)
 	{
 	case SIGINT:
-		ft_putstr_fd("Received SIGINT ", 1);
+		ft_putstr_fd("Received SIGINT ", 1); //opnieuw prompten
 		ft_putnbr_fd(getpid(), 1);
 		ft_putchar_fd('\n', 1);
-		exit(EXIT_SUCCESS);
+		exit(130);
 		break;
 	case SIGQUIT:
 		ft_putstr_fd("Received SIGQUIT ", 1);

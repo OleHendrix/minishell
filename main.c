@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 14:27:30 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/21 13:31:22 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/22 15:31:08 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,10 @@ void parse_input(char **envp, char *mode)
 		if (command.line[0] != '\0')
 		{		
 			if (!ft_strncmp(command.line, "exit", 5))
-				break ;
+			{
+				free_ptr_ptr(command.envp);
+				exit(EXIT_SUCCESS);
+			}
 			add_history(command.line);
 			command.line = ft_strtrim(command.line, " ");
 			// if (!checksyntax(command.line))
@@ -39,6 +42,7 @@ void parse_input(char **envp, char *mode)
 			free(command.line);
 	}
 	free(command.line);
+	ft_free_struct(&command);
 }
 
 int main(int argc, char **argv, char **envp)

@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/03 11:02:47 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/21 14:14:01 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/22 15:52:12 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,16 @@ int	init_commands(t_command *command, char **tokens, int i)
 	else if (!ft_strncmp(tokens[i], "<<", 3))
 	{
 		command->here_doc = true;
+		if (command->delimiter)
+			free(command->delimiter);
 		command->delimiter = ft_safe_strdup(tokens[i + 1], command);
 		i++;
 	}
 	else if (!ft_strncmp(tokens[i], "<<", 2))
 	{
 		command->here_doc = true;
+		if (command->delimiter)
+			free(command->delimiter);
 		command->delimiter = ft_safe_strdup(&tokens[i][2], command);
 	}
 	else

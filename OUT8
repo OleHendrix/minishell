@@ -1,0 +1,15 @@
+backups
+builtins
+execution
+lfbefe
+Libft
+main.c
+main.o
+Makefile
+minishell
+minishell.h
+out8
+OUT8
+parsing
+signals.c
+signals.o

@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/14 15:47:21 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/21 12:34:04 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/22 15:35:09 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ char	*adjuctquotes3(char *cmd, int delete, char *quotes, char *cmd2)
 
 	i = 0;
 	j = 0;
+	(void)delete;
 	while (cmd[i + j])
 		{
 			if (cmd[i + j] != quotes[0] && cmd[i + j] != quotes[1])
@@ -58,7 +59,7 @@ char	*adjustquotes2(char *cmd, int delete, char *quotes)
 		}
 	}
 	else 
-		return (adjuctquotes3(cmd, delete, quotes, cmd2));
+		return (free(quotes), adjuctquotes3(cmd, delete, quotes, cmd2));
 	return (cmd2);
 }
 
@@ -70,14 +71,16 @@ char	*get_first_last_quote(char *cmd)
 
 	i = 0;
 	end = ft_strlen(cmd);
-	quotes = malloc (sizeof(char) * 2);
+	quotes = ft_calloc (sizeof(char) , 2);
 	while (cmd[i ++])
 	{
-		if (cmd[i] == '\''  || cmd[i] == '\"')
+		if (cmd[i] == '\'' || cmd[i] == '\"')
 		{
 			quotes[0] = cmd[i];
 			break ;
 		}
+		if (i == end)
+			return (free(quotes), NULL);
 	}
 	while (end > 0)
 	{
@@ -100,6 +103,8 @@ char	*adjustquotes(char *cmd)
 	i = 0;
 	delete = 0;
 	quotes = get_first_last_quote(cmd);
+	if (!quotes)
+		return (cmd);
 	if (quotes[0] == quotes[1])
 	{
 		while (cmd[i])

@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/18 16:28:36 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/16 12:54:42 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/22 11:51:07 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ char *getcommand(t_command *command)
 
 	i = 0;
 	current = command->commands;
+	if (!current)
+		return (NULL);
 	while (i < command->cmd_tracker)
 	{
 		current = current->next;

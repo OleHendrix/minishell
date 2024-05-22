@@ -27,7 +27,7 @@ typedef struct t_list
 	int		infile_fd;
 	int		outfile_fd;
 	bool	filesset;
-	char	*cmd_delimiter; //free
+	char	*cmd_delimiter;
 }	t_list;
 
 typedef struct t_command
@@ -36,10 +36,10 @@ typedef struct t_command
 	char	**tokens;
 	struct t_list	*commands;
 	char 	**outfiles;
+	int 	*outfappend;
 	char	**infiles;
 	int		infiletracker;
 	int		outfiletracker;
-	// struct t_list	*variables;
 	int		save_std_in;
 	int		save_std_out;
 	char	*delimiter;
@@ -113,7 +113,7 @@ char	*ft_safe_strjoin(t_command *command, char *s1, char const *s2);
 //parsing_files.c
 void	ft_files_to_com2(t_command *command, t_list *current);
 void	ft_files_to_com(t_command *command);
-void	addoutfile(t_command *command, char *str);
+int		addoutfile(t_command *command, char *str);
 void	addinfile(t_command *command, char *str);
 int		ft_set_files(t_command *command, char *str, int set);
 void	init_files(t_command *command, char **tok);

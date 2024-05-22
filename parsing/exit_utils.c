@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:37:48 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/21 16:14:48 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/22 15:49:21 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ void free_list(t_list *list)
 	while (current != NULL)
 	{
 		next = current->next;
-		free(current->str);
+		if (current->str)
+			free(current->str);
 		free(current);
 		current = next;
 	}
@@ -64,10 +65,12 @@ void	ft_free_struct(t_command *command)
 		free_ptr_ptr(command->infiles);
 	if (command->outfiles)
 		free_ptr_ptr(command->outfiles);
-	// if (command->delimiter)
-	// 	free(command->delimiter);
 	if (command->line)
 		free(command->line);
 	if (command->pids)
 		free(command->pids);
+	if (command->outfappend)
+		free(command->outfappend);
+	// if (command->envp) invalid
+	// 	free_ptr_ptr(command->envp);
 }

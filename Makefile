@@ -28,7 +28,7 @@ signals.c
 
 OBJS = $(SOURCES:.c=.o)
 
-# CFLAGS = -Wall -Werror -Wextra -g
+CFLAGS = -Wall -Werror -Wextra -g
 
 all: $(NAME)
 

@@ -6,7 +6,7 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/14 15:54:07 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/21 16:13:33 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/22 16:00:36 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void ft_files_to_com(t_command *command)
 	int		i;
 
 	current = command->commands;
-	if (!current)// && command->pipes > 0)) //|| command->pipes >= command->cmd_count)
+	if (!current)
 		return;
 	i = 0;
 	while (current->next != NULL)
@@ -64,7 +64,7 @@ void ft_files_to_com(t_command *command)
 	ft_files_to_com2(command, current);
 }
 
-void	addoutfile(t_command *command, char *str)
+int	addoutfile(t_command *command, char *str)
 {
 	char **newarray;
 	int		count;
@@ -86,6 +86,7 @@ void	addoutfile(t_command *command, char *str)
 	newarray[count + 1] = NULL;
 	free_ptr_ptr(command->outfiles);
 	command->outfiles = newarray;
+	return (i);
 }
 
 void	addinfile(t_command *command, char *str)
@@ -112,6 +113,30 @@ void	addinfile(t_command *command, char *str)
 	command->infiles = newarray;
 }
 
+void	appendindex(int x, t_command *command)
+{
+	int	i;
+	int	j;
+	int	*outfappend;
+	
+	i = 0;
+	j = 0;
+	while (command->outfappend[i] != -1)
+		i ++;
+	outfappend = malloc((i + 2) * sizeof (int));
+	if (!outfappend)
+		ft_mallocfail(command, "FAIL");
+	while (command->outfappend[j] != -1)
+	{
+		outfappend[j] = command->outfappend[j];
+		j ++;
+	}
+	outfappend[j] = x;
+	outfappend[j + 1] = -1;
+	free(command->outfappend);
+	command->outfappend = outfappend;
+}
+
 int	ft_set_files(t_command *command, char *str, int set)
 {
 	if (set == 0) //infile
@@ -122,6 +147,11 @@ int	ft_set_files(t_command *command, char *str, int set)
 	if (set == 1) //outfile
 	{
 		addoutfile(command, str);
+		command->outfilereset = false;
+	}
+	if (set == 2) //delim
+	{
+		appendindex(addoutfile(command, str), command);
 		command->outfilereset = false;
 	}
 	return (1);
@@ -139,7 +169,7 @@ void init_files(t_command *command, char **tok)
 			i += ft_set_files(command, tok[i + 1], 0);
 			i ++;
 		}
-		else if (!ft_strncmp(tok[i], ">", 2) || !ft_strncmp(tok[i], ">>", 3))
+		else if (!ft_strncmp(tok[i], ">", 2) && ft_strncmp(tok[i], ">>", 2))
 		{
 			i += ft_set_files(command, tok[i + 1], 1);
 			i ++;
@@ -148,8 +178,13 @@ void init_files(t_command *command, char **tok)
 			i += ft_set_files(command, &tok[i][1], 0);
 		else if (tok[i][0] == '>' && tok[i][1] != '>' && tok[i][2] != '\0')
 			i += ft_set_files(command, &tok[i][1], 1);
-		else if (!ft_strncmp(tok[i], ">>", 2) )
-			i += ft_set_files(command, &tok[i][2], 1);
+		else if (!ft_strncmp(tok[i], ">>", 2) && tok[i][2] != '\0')
+			i += ft_set_files(command, &tok[i][2], 2);
+		else if (!ft_strncmp(tok[i], ">>", 3))
+		{
+			i += ft_set_files(command, tok[i + 1], 2);
+			i ++;
+		}	
 		else
 			i = init_commands(command, command->tokens, i);
 	}
