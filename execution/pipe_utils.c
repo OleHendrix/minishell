@@ -6,30 +6,30 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/18 16:28:36 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/22 11:51:07 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/06/06 12:02:43 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-pid_t ft_fork(t_command *command)
+int	is_directory(const char *path)
 {
-	// pid_t	pid;
+	struct stat	path_stat;
 
-	// pid = fork();
-	// if (pid == -1)
-	// {
-	// 	perror("FORK FAILED");
-	// }
-	// return (pid);
+	if (stat(path, &path_stat) != 0)
+		return (0);
+	return (S_ISDIR(path_stat.st_mode));
+}
 
+pid_t	ft_fork(t_command *command)
+{
 	command->pids[command->cmd_tracker] = fork();
 	if (command->pids[command->cmd_tracker] == -1)
-		ft_exit(command, "ERROR IN FORK");
+		ft_exit(command, "ERROR IN FORK", 1);
 	return (command->pids[command->cmd_tracker]);
 }
 
-char *getcommand(t_command *command)
+char	*getcommand(t_command *command)
 {
 	int		i;
 	t_list	*current;
@@ -46,7 +46,7 @@ char *getcommand(t_command *command)
 	return (current->str);
 }
 
-int *create_pipe(t_command *command)
+int	*create_pipe(t_command *command)
 {
 	int	*fd;
 
@@ -54,21 +54,8 @@ int *create_pipe(t_command *command)
 	if (!fd)
 		ft_mallocfail(command, "ERROR IN PIPE MALLOC");
 	if (pipe(fd) == -1)
-		ft_exit(command, "ERROR IN MAKING PIPE");
+		ft_exit(command, "ERROR IN MAKING PIPE", 1);
 	return (fd);
-}
-
-void	ft_free(char **cmd)
-{
-	int	i;
-
-	i = 0;
-	while (cmd[i])
-	{
-		free(cmd[i]);
-		i++;
-	}
-	free(cmd);
 }
 
 char	*ft_strjoin2(t_command *command, char *s1, char const *s2)
@@ -98,4 +85,3 @@ char	*ft_strjoin2(t_command *command, char *s1, char const *s2)
 	string[i + j] = '\0';
 	return (string);
 }
-

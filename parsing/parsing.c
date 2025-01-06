@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/03 11:02:47 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/22 15:52:12 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/06/06 15:19:28 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ int	init_commands(t_command *command, char **tokens, int i)
 {
 	if (!ft_strncmp(tokens[i], "|", 2))
 	{
-		command->newcom = true;
 		ft_files_to_com(command);
 		command->pipes++;
 		command->infilereset = true;
@@ -25,16 +24,12 @@ int	init_commands(t_command *command, char **tokens, int i)
 	else if (!ft_strncmp(tokens[i], "<<", 3))
 	{
 		command->here_doc = true;
-		if (command->delimiter)
-			free(command->delimiter);
 		command->delimiter = ft_safe_strdup(tokens[i + 1], command);
 		i++;
 	}
 	else if (!ft_strncmp(tokens[i], "<<", 2))
 	{
 		command->here_doc = true;
-		if (command->delimiter)
-			free(command->delimiter);
 		command->delimiter = ft_safe_strdup(&tokens[i][2], command);
 	}
 	else
@@ -44,7 +39,7 @@ int	init_commands(t_command *command, char **tokens, int i)
 
 int	count_commands(t_list **list)
 {
-	t_list *current;
+	t_list	*current;
 	int		i;
 
 	i = 0;
@@ -59,23 +54,28 @@ int	count_commands(t_list **list)
 
 void	initpids(t_command *command)
 {
+	command->pids = NULL;
 	if (!command->cmd_count)
-		return;
+		return ;
 	command->pids = malloc(command->cmd_count * sizeof(pid_t));
 	if (!command->pids)
 		ft_mallocfail(command, "MALLOC FAILED");
 }
 
-void	fill_struct(char *line, t_command *command, char *mode)
+void	fill_struct(t_command *command, char *mode)
 {
 	init_struct(command);
-	if (built_in_perm(command, line))
+	command->line = ft_variable(command, command->line);
+	if (built_in_perm(command, command->line))
+	{
+		ft_free_struct(command);
 		return ;
-	ft_supersplit(line, ' ', command);
+	}
+	command->line = ft_strtrim(command->line, " ");
+	ft_supersplit(command->line, ' ', command);
 	if (!command->tokens)
 		return (ft_putstr_fd("ERROR IN SPLIT", 2));
 	init_files(command, command->tokens);
-	// command->cmd_count = count_commands(&command->commands);
 	initpids(command);
 	if (mode && !ft_strncmp(mode, "test", 5))
 		printstruct(command);

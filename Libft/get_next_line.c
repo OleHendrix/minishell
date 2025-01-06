@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/11/23 14:59:07 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/21 16:28:38 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/06/06 15:20:23 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ char	*freeremainder(char *remainder, char *buffer)
 	return (NULL);
 }
 
-char	*ft_strjoin3(char *s1, char const *s2)
+char	*ft_strjoin3(char *s1, char *s2)
 {
 	char	*string;
 	int		i;
@@ -50,7 +50,8 @@ char	*ft_strjoin3(char *s1, char const *s2)
 		j++;
 	}
 	string[i + j] = '\0';
-	free(s1);
+	if (s2)
+		free(s2);
 	return (string);
 }
 
@@ -61,8 +62,6 @@ char	*get_next_line(int fd)
 	static char	*remainder;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
 	buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
 		return (freeremainder(remainder, NULL));
@@ -72,28 +71,14 @@ char	*get_next_line(int fd)
 	while (checkbuffer(remainder) != 1 && charsread != 0)
 	{
 		charsread = read(fd, buffer, BUFFER_SIZE);
+		while (charsread == 0 && remainder[0] != '\0')
+			charsread = read(fd, buffer, BUFFER_SIZE);
 		if (charsread == -1)
 			return (remainder = freeremainder(remainder, buffer), NULL);
 		buffer[charsread] = '\0';
-		remainder = ft_strjoin3(remainder, buffer);
+		remainder = ft_strjoin(remainder, buffer);
 	}
-	free(buffer);
 	line = ft_fillline(remainder);
 	remainder = ft_cutremainder(remainder);
-	return (line);
+	return (free(buffer), line);
 }
-
-// int main(void)
-// {
-// 	int		fd;
-// 	char	*line = "a";
-
-// 	fd = open("text.txt", O_RDONLY);
-// 	while (line != NULL)
-// 	{
-// 		line = get_next_line(fd);
-// 		printf("%s", line);
-// 		free(line);
-// 	}
-// 	close(fd);
-// }

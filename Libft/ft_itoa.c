@@ -6,58 +6,64 @@
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/10/31 14:10:54 by ohendrix      #+#    #+#                 */
-/*   Updated: 2023/10/31 14:12:23 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/27 16:12:30 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	checksize(int n)
+static char	*ft_str(char *str, int neg, int a, int i)
+{
+	int	len;
+
+	len = i;
+	while (i > 0)
+	{
+		if (neg > 0)
+			str[0] = '-';
+		str[i + neg - 1] = a % 10 + '0';
+		a = a / 10;
+		i--;
+	}
+	str[len + neg] = '\0';
+	return (str);
+}
+
+static int	ft_icount(int n)
 {
 	int	i;
 
 	i = 0;
-	if (n == 0)
-		return (1);
-	if (n < 0)
-		i++;
-	while (n != 0)
+	while (n > 0)
 	{
-		i++;
 		n = n / 10;
+		i ++;
 	}
 	return (i);
 }
 
 char	*ft_itoa(int n)
 {
-	char			*str;
-	int				i;
-	unsigned int	number;
+	int		i;
+	int		a;
+	int		neg;
+	char	*str;
 
-	i = checksize(n);
-	str = malloc(i + 1);
-	number = n;
-	if (!str)
-		return (NULL);
+	neg = 0;
+	if (n == -2147483648)
+		return (ft_strdup("-2147483648"));
+	if (n == 0)
+		return (ft_strdup("0"));
 	if (n < 0)
 	{
-		str[0] = '-';
-		number = -n;
+		neg++;
+		n = -n;
 	}
-	str[i] = '\0';
-	i--;
-	while (i >= 0 && str[i] != '-')
-	{
-		str[i] = (number % 10) + 48;
-		number = number / 10;
-		i--;
-	}
+	a = n;
+	i = ft_icount(n);
+	str = (char *)malloc((i + neg + 1) * sizeof(char));
+	if (str == NULL)
+		return (NULL);
+	str = ft_str(str, neg, a, i);
 	return (str);
 }
-
-// int main(void)
-// {
-//     int n = -3444;
-//     printf("%s", ft_itoa(n));
-// }

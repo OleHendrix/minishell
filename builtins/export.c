@@ -6,13 +6,13 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/30 14:15:30 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/02 14:50:34 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/06/06 12:12:50 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-char **ft_envadd(t_command *command, char **envp, char *cmd)
+char	**ft_envadd(t_command *command, char **envp, char *cmd)
 {
 	char	**envp2;
 	int		count;
@@ -32,7 +32,7 @@ char **ft_envadd(t_command *command, char **envp, char *cmd)
 	}
 	envp2[i] = ft_safe_strdup(cmd, command);
 	envp2[count + 1] = NULL;
-	return (free(envp), envp2);	
+	return (free_ptr_ptr(envp), envp2);
 }
 
 char	**ft_envdup(char **envp)
@@ -50,20 +50,24 @@ char	**ft_envdup(char **envp)
 		ft_mallocfail(NULL, "Mallocfail");
 	while (i < count)
 	{
-		envp2[i] = ft_safe_strdup(envp[i], NULL); 
+		envp2[i] = ft_safe_strdup(envp[i], NULL);
 		i++;
 	}
 	envp2[count] = NULL;
 	return (envp2);
 }
 
-size_t	ft_getvar(char *cmd)
+int	ft_getvar(char *cmd)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
+	if (!ft_isalpha(cmd[0]))
+		return (-1);
 	while (cmd[i] != '\0')
 	{
+		if (cmd[i] == '+' || cmd[i] == '-')
+			return (-1);
 		if (cmd[i] == '=')
 			return (i + 1);
 		i++;
@@ -73,10 +77,14 @@ size_t	ft_getvar(char *cmd)
 
 void	ft_export(t_command *command, char *cmd)
 {
-	size_t	variable;
+	int		variable;
 	int		i;
 
+	if (cmd[0] == '\0')
+		return (ft_env(command, true));
 	variable = ft_getvar(cmd);
+	if (variable == -1 || !ft_strncmp(cmd, "=", 2))
+		return (ft_perror("not a valid identifier", command, 1));
 	i = 0;
 	while (command->envp[i])
 	{

@@ -6,30 +6,34 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/22 16:37:48 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/22 15:49:21 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/06/06 14:59:38 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void ft_mallocfail(t_command *command, char *str)
+void	ft_mallocfail(t_command *command, char *str)
 {
 	perror(str);
 	ft_free_struct(command);
 	exit(1);
 }
 
-void ft_exit(t_command *command, char *str)
+void	ft_exit(t_command *command, char *str, int exit_status)
 {
-	perror(str);
+	if (str)
+	{
+		ft_putstr_fd(str, 2);
+		ft_putchar_fd('\n', 2);
+	}
 	ft_free_struct(command);
-	exit(1);
+	exit(exit_status);
 }
 
-void free_list(t_list *list)
+void	free_list(t_list *list)
 {
-	t_list *current;
-	t_list *next;
+	t_list	*current;
+	t_list	*next;
 
 	current = list;
 	while (current != NULL)
@@ -42,7 +46,7 @@ void free_list(t_list *list)
 	}
 }
 
-void free_ptr_ptr(char **array)
+void	free_ptr_ptr(char **array)
 {
 	int	i;
 
@@ -71,6 +75,4 @@ void	ft_free_struct(t_command *command)
 		free(command->pids);
 	if (command->outfappend)
 		free(command->outfappend);
-	// if (command->envp) invalid
-	// 	free_ptr_ptr(command->envp);
 }

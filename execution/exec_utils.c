@@ -1,129 +1,64 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   exec_utils.c                                       :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/05/14 15:47:21 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/22 15:35:09 by ohendrix      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   exec_utils.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/14 15:47:21 by ohendrix          #+#    #+#             */
+/*   Updated: 2024/06/05 17:08:09 by olehendrix       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-char	*adjuctquotes3(char *cmd, int delete, char *quotes, char *cmd2)
+void	ft_openinfiles(t_command *command, t_list *current, int *fd)
 {
-	int	i;
-	int	j;
+	int	fd2;
+
+	while (command->infiletracker < current->infileindex)
+	{
+		fd2 = open(command->infiles[command->infiletracker], O_RDONLY, 0777);
+		command->infiletracker ++;
+		if (fd2 == -1)
+			ft_perror("FILE ERROR", command, 1);
+		close(fd2);
+	}
+	if (command->failedfile && current->infileindex == -1)
+	{
+		if (dup2(fd[0], STDIN_FILENO) == -1)
+			ft_exit(command, "ERROR IN DUP2", 1);
+		close(fd[0]);
+		close(fd[1]);
+	}
+}
+
+char	*ft_strnstr2(char *big, const char *little, size_t len, t_command *com)
+{
+	size_t	i;
+	size_t	j;
 
 	i = 0;
-	j = 0;
-	(void)delete;
-	while (cmd[i + j])
+	if (!big)
+		ft_exit(com, "command not found", 1);
+	if (little[0] == '\0')
+	{
+		return ((char *)big);
+	}
+	while (i < len && big[i] != '\0')
+	{
+		j = 0;
+		while (i + j < len && big[i + j] == little[j])
 		{
-			if (cmd[i + j] != quotes[0] && cmd[i + j] != quotes[1])
+			if (little[j + 1] == '\0')
 			{
-				cmd2[i] = cmd[i + j];
-				i++;
+				return ((char *)&big[i]);
 			}
-			else
-				j++;
+			j++;
 		}
-	cmd2[i] = '\0';
-	return (free(quotes), cmd2);
-}
-
-char	*adjustquotes2(char *cmd, int delete, char *quotes)
-{
-	char	*cmd2;
-	int		i;
-	int		j;
-
-	cmd2 = malloc(sizeof(char) * (ft_strlen(cmd) - delete) + 1);
-	i = 0;
-	j = 0;
-	if (!cmd2)
-		return (printf("MALLOC FAILED"), NULL);
-	if (quotes[0] == quotes[1])
-	{
-		while (cmd[i + j])
-		{
-			if (cmd[i + j] != quotes[0])
-			{
-				cmd2[i] = cmd[i + j];
-				i++;
-			}
-			else
-				j++;
-		}
+		i++;
 	}
-	else 
-		return (free(quotes), adjuctquotes3(cmd, delete, quotes, cmd2));
-	return (cmd2);
-}
-
-char	*get_first_last_quote(char *cmd)
-{
-	char	*quotes;
-	int		i;
-	int		end;
-
-	i = 0;
-	end = ft_strlen(cmd);
-	quotes = ft_calloc (sizeof(char) , 2);
-	while (cmd[i ++])
-	{
-		if (cmd[i] == '\'' || cmd[i] == '\"')
-		{
-			quotes[0] = cmd[i];
-			break ;
-		}
-		if (i == end)
-			return (free(quotes), NULL);
-	}
-	while (end > 0)
-	{
-		if (cmd[end] == '\''  || cmd[end] == '\"')
-		{
-			quotes[1] = cmd[end];
-			break ;
-		}
-		end --;
-	}
-	return (quotes);
-}
-
-char	*adjustquotes(char *cmd)
-{
-	char *quotes;
-	int		i;
-	int		delete;
-
-	i = 0;
-	delete = 0;
-	quotes = get_first_last_quote(cmd);
-	if (!quotes)
-		return (cmd);
-	if (quotes[0] == quotes[1])
-	{
-		while (cmd[i])
-		{
-			if (cmd[i] == quotes[0])
-				delete ++;
-			i ++;
-		}
-	}
-	else 
-	{
-		while (cmd[i])
-		{
-			if (cmd[i] == quotes[0] || cmd[i] == quotes[1])
-				delete ++;
-			i++;
-		}
-	}
-	return (adjustquotes2(cmd, delete, quotes));
+	return (NULL);
 }
 
 void	ft_waitpids(t_command *command)
@@ -131,17 +66,14 @@ void	ft_waitpids(t_command *command)
 	int	i;
 
 	i = 0;
-	
 	while (i < command->cmd_tracker)
 	{
-		if(command->pids[i])
+		if (command->pids[i])
 			waitpid(command->pids[i], &command->exitstatus, 0);
-		// printf("%d, %d\n", i, command->cmd_tracker);
 		i++;
 	}
-	// printf(":)\n");
-	// waitpid(command->pids[0], NULL, 0);
-	// perror("pfnif\n");
+	if (WIFEXITED(command->exitstatus))
+		command->exitstatus = WEXITSTATUS(command->exitstatus);
 }
 
 void	ft_restore_in_out(t_command *command)
@@ -149,18 +81,18 @@ void	ft_restore_in_out(t_command *command)
 	if (command->save_std_in > -1)
 	{
 		if (dup2(command->save_std_in, STDIN_FILENO) == -1)
-			ft_exit(command, "ERROR IN DUP26");
+			ft_exit(command, "ERROR IN DUP26", 1);
 	}
 	if (command->save_std_out > -1)
 	{
 		if (dup2(command->save_std_out, STDOUT_FILENO) == -1)
-			ft_exit(command, "ERROR IN DUP27");
+			ft_exit(command, "ERROR IN DUP27", 1);
 	}
 	close(command->save_std_in);
 	close(command->save_std_out);
 }
 
-t_list *getcommand_node(t_command *command)
+t_list	*getcommand_node(t_command *command)
 {
 	int		i;
 	t_list	*current;
@@ -174,4 +106,3 @@ t_list *getcommand_node(t_command *command)
 	}
 	return (current);
 }
-

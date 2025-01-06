@@ -1,40 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   ft_isascii.c                                       :+:    :+:            */
+/*   pwd.c                                              :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2023/10/25 14:39:20 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/06/04 11:46:53 by ohendrix      ########   odam.nl         */
+/*   Created: 2024/05/24 14:18:01 by ohendrix      #+#    #+#                 */
+/*   Updated: 2024/06/06 14:37:06 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../minishell.h"
 
-int	ft_isascii(int c)
+void	ft_pwd(t_command *command)
 {
-	if (c >= 0 && c <= 127)
+	char	*path;
+
+	(void)command;
+	path = NULL;
+	path = ft_getenv(command, "PWD");
+	if (path)
 	{
-		return (1);
+		printf("%s\n", path);
 	}
 	else
-	{
-		return (0);
-	}
+		return (ft_perror("pwd Failed", command, 1));
 }
-
-// int	main()
-// {
-// 	for (int i = 0; i < 256; i++)
-// 	{
-// 		if (ft_isascii(i) != isascii(i))
-// 		{
-// 			printf("\nERROR at %i:\n", i);
-// 			printf("%i\n", ft_isascii(i));
-// 			printf("%i\n", isascii(i));
-// 			continue;
-// 		}
-// 	printf("ok ");
-// 	}
-// }

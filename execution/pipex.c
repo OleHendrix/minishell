@@ -6,7 +6,7 @@
 /*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/01/12 16:41:56 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/22 16:34:27 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/06/06 11:40:35 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,9 @@ char	*ft_findpath(t_command *command, char *cmd, char **envp)
 	int		i;
 
 	i = 0;
-	while (ft_strnstr(envp[i], "PATH", 4) == 0)
+	if (access(cmd, F_OK) == 0)
+		return (cmd);
+	while (ft_strnstr2(envp[i], "PATH", 4, command) == 0)
 		i++;
 	paths = ft_split(envp[i] + 5, ':');
 	if (paths == NULL)
@@ -29,25 +31,26 @@ char	*ft_findpath(t_command *command, char *cmd, char **envp)
 	while (paths[++i])
 	{
 		pathpart = ft_strjoin2(command, paths[i], "/");
+		if (!pathpart)
+			ft_mallocfail(command, "MALLOC FAILED IN FT_STRJOIN");
 		path = ft_safe_strjoin(command, pathpart, cmd);
 		if (access(path, F_OK) == 0)
-			return (ft_free(paths), path);
+			return (free_ptr_ptr(paths), path);
 		free(path);
 	}
-	ft_free(paths);
-	return (NULL);
+	return (free_ptr_ptr(paths), NULL);
 }
 
-void	ft_execute(t_command *command)
+void	ft_execute(t_command *command, char *cmd)
 {
 	char	**cmd_split;
 	char	*path;
-	char	*cmd;
 
-	cmd = getcommand(command);
+	cmd = adjustquotes(ft_safe_strdup(cmd, command));
+	if (is_directory(cmd))
+		ft_exit(command, "IS A DIRECTORY", 126);
 	if (!cmd)
 		return ;
-	cmd = adjustquotes(cmd);
 	if (built_in(command, cmd) > 0)
 		exit(EXIT_SUCCESS);
 	cmd_split = ft_split(cmd, ' ');
@@ -56,78 +59,80 @@ void	ft_execute(t_command *command)
 	path = ft_findpath(command, cmd_split[0], command->envp);
 	if (path == NULL)
 	{
-		ft_free(cmd_split);
-		ft_exit(command, "PATH NOT FOUND");
+		free_ptr_ptr(cmd_split);
+		ft_exit(command, "PATH NOT FOUND", 127);
 	}
 	if (execve(path, cmd_split, command->envp) == -1)
 	{
-		ft_free(cmd_split);
 		free(path);
-		ft_exit(command, "ERROR IN EXECVE");
+		ft_exit(command, "ERROR IN EXECVE", 127);
 	}
-	ft_free(cmd_split);
-	free(path);
 }
 
 void	ft_childproces(int fd[2], t_command *command)
 {
-	if (config_outfiles(command) != 2 && command->cmd_tracker + 1 < command->cmd_count)
-	{
-		close(fd[0]);
-		if (dup2(fd[1], STDOUT_FILENO) == -1)
-			ft_exit(command, "ERROR IN DUP2");
-		close(fd[1]);
-	}
-	else if (command->cmd_tracker < command->cmd_count - 1)
-	{
-		close(fd[0]);
-		if (dup2(fd[1], STDOUT_FILENO) == -1)
-			ft_exit(command, "ERROR IN DUP2");
-		close(fd[1]);
-	}
-	else
-	{
-		close(fd[0]);
-		close(fd[1]);
-	}
-	close(command->save_std_in);
-	close(command->save_std_out);
-	ft_execute(command);
-}
+	int	check;
 
-void	ft_configinput(int fd[2], t_command *command)
-{
-	// printf("%d,\n", command->infiletracker);
-	if (config_infiles(command, true) != 2 && command->cmd_tracker + 1 < command->cmd_count)
+	init_signals(1);
+	check = config_outfiles(command);
+	if (check != 2 && command->cmd_tracker + 1 < command->cmd_count)
 	{
-		if (dup2(fd[0], STDIN_FILENO) == -1)
-			ft_exit(command, "ERROR IN DUP2");
+		if (dup2(fd[1], STDOUT_FILENO) == -1)
+			ft_exit(command, "ERROR IN DUP2", 1);
+	}
+	else if (command->cmd_count > 1 && command->cmd_count
+		== command->cmd_tracker + 1 && check != 2)
+		;
+	else if ((command->cmd_tracker < command->cmd_count - 1
+			|| command->cmd_tracker < command->pipes) && check != 2)
+	{
+		if (dup2(fd[1], STDOUT_FILENO) == -1)
+			ft_exit(command, "ERROR IN DUP2", 1);
 	}
 	close(fd[0]);
 	close(fd[1]);
+	close(command->save_std_in);
+	close(command->save_std_out);
+	ft_execute(command, getcommand(command));
 }
 
-void	pipex(t_command *command)
+void	pipex2(t_command *command)
 {
-	pid_t		pid;
-	int			*fd;
+	int		*fd;
+	pid_t	pid;
 
-	pid = getpid();
-	command->save_std_in = dup(STDIN_FILENO);
-	command->save_std_out = dup(STDOUT_FILENO);
-	while (!config_infiles(command, false) && command->cmd_tracker < command->cmd_count)
-		command->cmd_tracker ++;
 	while (command->cmd_tracker < command->cmd_count)
 	{
 		fd = create_pipe(command);
+		g_sighdlr.status = 2;
 		pid = ft_fork(command);
 		if (!pid)
 			ft_childproces(fd, command);
 		else
-			ft_configinput(fd, command);
+		{
+			if (!ft_configinput(fd, command))
+				command->cmd_tracker ++;
+			ft_updateout(command);
+		}
 		command->cmd_tracker ++;
 		free(fd);
 	}
+}
+
+void	pipex(t_command *command)
+{
+	command->save_std_in = dup(STDIN_FILENO);
+	command->save_std_out = dup(STDOUT_FILENO);
+	while (!config_infiles(command, false)
+		&& command->cmd_tracker < command->cmd_count)
+	{
+		if (g_sighdlr.exit_heredoc == true)
+			return ;
+		command->cmd_tracker ++;
+	}
+	pipex2(command);
 	ft_waitpids(command);
+	openremainder(command);
 	ft_restore_in_out(command);
+	g_sighdlr.status = 0;
 }

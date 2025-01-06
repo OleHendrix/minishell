@@ -3,55 +3,88 @@
 /*                                                        ::::::::            */
 /*   signals.c                                          :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: jdijkman <jdijkman@student.codam.nl>         +#+                     */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/04/30 10:59:39 by jdijkman      #+#    #+#                 */
-/*   Updated: 2024/05/22 15:15:34 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/06/06 15:20:03 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+struct g_sig	g_sighdlr;
+
+void	init_g_sig(void)
+{
+	g_sighdlr.status = 0;
+	g_sighdlr.exit_heredoc = false;
+}
+
+void	ctrl_c(void)
+{
+	if (g_sighdlr.status == 0)
+	{
+		ft_putchar_fd('\n', 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+	else if (g_sighdlr.status == 1)
+	{
+		ft_putchar_fd('\n', 1);
+		g_sighdlr.exit_heredoc = true;
+		g_sighdlr.status = 0;
+	}
+	else if (g_sighdlr.status == 2)
+	{
+		ft_putchar_fd('\n', 1);
+		rl_redisplay();
+		rl_replace_line("", 0);
+		g_sighdlr.status = 0;
+	}
+}
+
 void	sig_handler(int sig, siginfo_t *info, void *context)
 {
 	(void)info;
 	(void)context;
-	switch (sig)
+	if (sig == SIGINT)
+		ctrl_c();
+	else if (sig == SIGQUIT)
 	{
-	case SIGINT:
-		ft_putstr_fd("Received SIGINT ", 1); //opnieuw prompten
-		ft_putnbr_fd(getpid(), 1);
 		ft_putchar_fd('\n', 1);
-		exit(130);
-		break;
-	case SIGQUIT:
-		ft_putstr_fd("Received SIGQUIT ", 1);
-		ft_putnbr_fd(getpid(), 1);
-		exit(EXIT_SUCCESS);
-		break;
-	default:
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+		g_sighdlr.status = 0;
+	}
+	else
+	{
 		ft_putstr_fd("Received unknown signal\n", 1);
 		ft_putnbr_fd(getpid(), 1);
-		break;
 	}
 	return ;
 }
 
-void	init_signals()
+void	init_signals(int status)
 {
-	struct sigaction	sa;
+	static struct sigaction	sa = {0};
+
 	sa.sa_sigaction = sig_handler;
 	sa.sa_flags = 0;
-	
+	if (status == 0)
+		init_g_sig();
 	if (sigaction(SIGINT, &sa, NULL) == -1)
 	{
 		perror("sigaction");
-		return;
+		return ;
 	}
 	if (sigaction(SIGQUIT, &sa, NULL) == -1)
 	{
 		perror("sigterm");
-		return;
+		return ;
 	}
+	if (g_sighdlr.status != 2)
+		signal(SIGQUIT, SIG_IGN);
 	return ;
 }

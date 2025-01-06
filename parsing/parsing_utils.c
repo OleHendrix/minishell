@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   parsing_utils.c                                    :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/04/22 16:23:18 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/22 13:11:35 by ohendrix      ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   parsing_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: olehendrix <olehendrix@student.42.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/22 16:23:18 by ohendrix          #+#    #+#             */
+/*   Updated: 2024/06/05 17:10:35 by olehendrix       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	printarray(char **list)
 	printf("\n");
 }
 
-void printstruct(t_command *command)
+void	printstruct(t_command *command)
 {
 	if (command->pipes)
 		printf("pipe: %d\n", command->pipes);
@@ -41,8 +41,6 @@ void printstruct(t_command *command)
 	}
 	if (command->here_doc)
 		printf("here doc: true\n");
-	if (command->delimiter)
-		printf("delimiter: %s\n", command->delimiter);
 	if (command->commands)
 	{
 		printf("commands:\n");
@@ -70,23 +68,6 @@ void	printstack(t_list **a)
 	}
 }
 
-// void	trim_quotes(t_list **list)
-// {
-// 	t_list *begin;
-// 	int		i;
-
-// 	begin = *list;
-// 	while (begin != NULL)
-// 	{
-// 		while (begin->str[i] != '\0')
-// 		{
-// 			if (begin->str[i] == '\"')
-// 				begin->str = trimdquote(begin->str, i);
-// 			i++;
-// 		}
-// 	}
-// }
-
 char	*ft_safe_strdup(char *str, t_command *command)
 {
 	char	*dup;
@@ -102,12 +83,10 @@ char	*ft_safe_strdup(char *str, t_command *command)
 
 char	*ft_safe_strjoin(t_command *command, char *s1, char const *s2)
 {
-	char *str;
-	
+	char	*str;
+
 	str = ft_strjoin(s1, s2);
 	if (str == NULL)
-	{
 		ft_mallocfail(command, "MALLOC FAILED IN STRDUP");
-	}
 	return (str);
 }

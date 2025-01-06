@@ -3,10 +3,10 @@
 /*                                                        ::::::::            */
 /*   libft.h                                            :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/10/27 16:38:12 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/21 16:26:26 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/28 15:38:23 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 # include <ctype.h>
 # include <string.h>
 # include "libft.h"
-#ifndef BUFFER_SIZE
-# define BUFFER_SIZE 50
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 50
 
 int		ft_atoi(const char *nptr);
 void	ft_bzero(void *s, size_t n);
@@ -60,10 +60,11 @@ int		ft_toupper(int c);
 char	*get_next_line(int fd);
 char	*freeremainder(char *remainder, char *buffer);
 char	*ft_fillremainder(char *remainder);
+char	*ft_strjoin3(char *s1, char *s2);
+char	*ft_strjoin4(char *s1, char *s2);
 int		checkbuffer(char *buffer);
 char	*ft_fillline(char *remainder);
 char	*ft_cutremainder(char *remainder);
 
-
-#endif
+# endif
 #endif

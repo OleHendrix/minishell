@@ -3,70 +3,18 @@
 /*                                                        ::::::::            */
 /*   parsing_files.c                                    :+:    :+:            */
 /*                                                     +:+                    */
-/*   By: ohendrix <ohendrix@student.codam.nl>         +#+                     */
+/*   By: olehendrix <olehendrix@student.42.fr>        +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/05/14 15:54:07 by ohendrix      #+#    #+#                 */
-/*   Updated: 2024/05/22 16:00:36 by ohendrix      ########   odam.nl         */
+/*   Updated: 2024/05/31 17:55:27 by ohendrix      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ft_files_to_com2(t_command *command, t_list *current)
-{
-	int	i;
-
-	i = 0;
-	if (!command->outfilereset)
-	{
-		if (!command->outfiles[i])
-			current->outfileindex = -1;
-		else
-		{
-			while (command->outfiles[i] != NULL)
-				i++;
-			current->outfileindex = i - 1;
-		}
-	}
-	current->filesset = true;
-}
-
-void ft_files_to_com(t_command *command)
-{
-	t_list *current;
-	int		i;
-
-	current = command->commands;
-	if (!current)
-		return;
-	i = 0;
-	while (current->next != NULL)
-		current = current->next;
-	if (current->filesset)
-		return;
-	if (command->here_doc)
-	{
-		current->cmd_delimiter = ft_safe_strdup(command->delimiter, command);
-		command->here_doc = false;
-		free(command->delimiter);
-	}
-	if (!command->infilereset)
-	{
-		if (!command->infiles[i])
-			current->infileindex = -1;
-		else
-		{
-			while (command->infiles[i] != NULL)
-				i++;
-			current->infileindex = i - 1;
-		}
-	}
-	ft_files_to_com2(command, current);
-}
-
 int	addoutfile(t_command *command, char *str)
 {
-	char **newarray;
+	char	**newarray;
 	int		count;
 	int		i;
 
@@ -76,7 +24,10 @@ int	addoutfile(t_command *command, char *str)
 		count++;
 	newarray = malloc((count + 2) * sizeof(char *));
 	if (!newarray)
+	{
+		free(str);
 		ft_mallocfail(command, "FAIL");
+	}
 	while (i < count)
 	{
 		newarray[i] = ft_safe_strdup(command->outfiles[i], command);
@@ -91,7 +42,7 @@ int	addoutfile(t_command *command, char *str)
 
 void	addinfile(t_command *command, char *str)
 {
-	char **newarray;
+	char	**newarray;
 	int		count;
 	int		i;
 
@@ -101,7 +52,10 @@ void	addinfile(t_command *command, char *str)
 		count++;
 	newarray = malloc((count + 2) * sizeof(char *));
 	if (!newarray)
+	{
+		free(str);
 		ft_mallocfail(command, "FAIL");
+	}
 	while (i < count)
 	{
 		newarray[i] = ft_safe_strdup(command->infiles[i], command);
@@ -118,7 +72,7 @@ void	appendindex(int x, t_command *command)
 	int	i;
 	int	j;
 	int	*outfappend;
-	
+
 	i = 0;
 	j = 0;
 	while (command->outfappend[i] != -1)
@@ -139,25 +93,31 @@ void	appendindex(int x, t_command *command)
 
 int	ft_set_files(t_command *command, char *str, int set)
 {
-	if (set == 0) //infile
+	char	*newstr;
+
+	newstr = ft_safe_strdup(str, command);
+	newstr = adjustquotes(newstr);
+	if (!newstr)
+		ft_mallocfail(command, "MALLOCFAIL IN FT_SETFILES");
+	if (set == 0)
 	{
-		addinfile(command, str);
+		addinfile(command, newstr);
 		command->infilereset = false;
 	}
-	if (set == 1) //outfile
+	if (set == 1)
 	{
-		addoutfile(command, str);
+		addoutfile(command, newstr);
 		command->outfilereset = false;
 	}
-	if (set == 2) //delim
+	if (set == 2)
 	{
-		appendindex(addoutfile(command, str), command);
+		appendindex(addoutfile(command, newstr), command);
 		command->outfilereset = false;
 	}
-	return (1);
+	return (free(newstr), 1);
 }
 
-void init_files(t_command *command, char **tok)
+void	init_files(t_command *command, char **tok)
 {
 	int	i;
 
@@ -165,26 +125,17 @@ void init_files(t_command *command, char **tok)
 	while (tok[i] != NULL)
 	{
 		if (!ft_strncmp(tok[i], "<", 2))
-		{
-			i += ft_set_files(command, tok[i + 1], 0);
-			i ++;
-		}
+			i += ft_set_files(command, tok[i + 1], 0) + 1;
 		else if (!ft_strncmp(tok[i], ">", 2) && ft_strncmp(tok[i], ">>", 2))
-		{
-			i += ft_set_files(command, tok[i + 1], 1);
-			i ++;
-		}
-		else if (tok[i][0] == '<' && tok[i][1] != '<' && tok[i][2] != '\0')
+			i += ft_set_files(command, tok[i + 1], 1) + 1;
+		else if (tok[i][0] == '<' && tok[i][1] != '<')
 			i += ft_set_files(command, &tok[i][1], 0);
-		else if (tok[i][0] == '>' && tok[i][1] != '>' && tok[i][2] != '\0')
+		else if (tok[i][0] == '>' && tok[i][1] != '>')
 			i += ft_set_files(command, &tok[i][1], 1);
 		else if (!ft_strncmp(tok[i], ">>", 2) && tok[i][2] != '\0')
 			i += ft_set_files(command, &tok[i][2], 2);
 		else if (!ft_strncmp(tok[i], ">>", 3))
-		{
-			i += ft_set_files(command, tok[i + 1], 2);
-			i ++;
-		}	
+			i += ft_set_files(command, tok[i + 1], 2) + 1;
 		else
 			i = init_commands(command, command->tokens, i);
 	}
